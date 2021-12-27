@@ -28,23 +28,16 @@ public class CustomMailSender {
     private final String from = "8419133ac9-0f61af@inbox.mailtrap.io";
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final JavaMailSender emailSender;
-    @Value("src/main/resources/templates/images/69901618385469411.png")
-    Resource resourceFile;
-    @Value("src/main/resources/templates/recoveryPassword.html")
-    private String mailTemplatesPath;
 
     public void sendMail(String to, String subject, String document, Boolean html, String typeMail){
 
         try{
-            FileTemplateResolver templateResolver = new FileTemplateResolver();
-            templateResolver.setPrefix(mailTemplatesPath);
             MimeMessage mimeMessage = emailSender.createMimeMessage();
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             message.setTo(to);
             message.setFrom(new InternetAddress(from, fromName));
             message.setSubject(subject);
             message.setText(document, html);
-            message.addInline("identifier1234", resourceFile);
             emailSender.send(mimeMessage);
             log.info(String.format("EMAIL (%s) SENDED TO: %s", typeMail, to));
         } catch (Exception ignored) {
@@ -56,15 +49,16 @@ public class CustomMailSender {
     public boolean sendResetUser(String to, Map<String, String> data){
         if(!data.containsKey("password")) return false;
 
-        String document = "New password: " + data.get("password");
-        String prova = "";
+       // String document = "New password: " + data.get("password");
+        String document = "";
         try {
-           prova = Files.readString(Paths.get("src/main/resources/templates/recoveryPassword.html"));
+            document = Files.readString(Paths.get("src/main/resources/templates/recoveryPassword.html"));
+           //regex per la password "${newPassword}" con data.get("password")
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        sendMail(to, "Reset Password",prova, true, "Recovery Password");
+        sendMail(to, "Reset Password",document,true, "Recovery Password");
         return true;
     }
 
