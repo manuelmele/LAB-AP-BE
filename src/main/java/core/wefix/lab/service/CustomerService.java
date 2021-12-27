@@ -27,7 +27,7 @@ public class CustomerService {
 
 	/**
 	 * Allows retrieving of all user data from his authentication
-	 * @return a Account: all information about user logged
+	 * @return an Account: all information about user logged
 	 */
 	public Account getUserInfo(){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
