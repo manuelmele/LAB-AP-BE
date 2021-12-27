@@ -1,8 +1,7 @@
 package core.wefix.lab.configuration.error;
 
-import io.swagger.v3.oas.annotations.Hidden;
 import core.wefix.lab.service.jwt.JWTService;
-import javassist.bytecode.DuplicateMemberException;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.apache.catalina.connector.ClientAbortException;
 import org.hibernate.AssertionFailure;
 import org.slf4j.Logger;
