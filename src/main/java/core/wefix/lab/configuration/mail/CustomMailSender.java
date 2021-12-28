@@ -49,11 +49,10 @@ public class CustomMailSender {
     public boolean sendResetUser(String to, Map<String, String> data){
         if(!data.containsKey("password")) return false;
 
-       // String document = "New password: " + data.get("password");
         String document = "";
         try {
             document = Files.readString(Paths.get("src/main/resources/templates/recoveryPassword.html"));
-           //regex per la password "${newPassword}" con data.get("password")
+            document = document.replaceAll("\\{newPassword}", data.get("password"));
         } catch (IOException e) {
             e.printStackTrace();
         }
