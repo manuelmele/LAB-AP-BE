@@ -3,6 +3,7 @@ package core.wefix.lab.controller;
 import core.wefix.lab.configuration.error.ErrorResponse;
 import core.wefix.lab.service.PublicService;
 import core.wefix.lab.utils.object.request.RegisterRequest;
+import core.wefix.lab.utils.object.response.JWTResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,55 +25,34 @@ public class PublicApiController {
 	private final PublicService publicService;
 
 	@PostMapping(path = "/signup")
-	@Operation(summary = "User Register as customer")
+	@Operation(summary = "Allows user to register as customer")
 	@ApiResponses({
-			@ApiResponse(responseCode = "200", description = "Successful Operation", content = @Content(mediaType = "text/plain")),
-			@ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+			@ApiResponse(responseCode = "200", description = "Successful Operation", content = @Content(mediaType = "application/json", schema = @Schema(implementation = JWTResponse.class))),
+			@ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+			@ApiResponse(responseCode = "409", description = "Conflict", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	public String signUp(@RequestBody RegisterRequest data) {
+	public JWTResponse signUp(@RequestBody RegisterRequest data) {
 		return publicService.signUp(data);
 	}
 
-	@PostMapping(path = "/login/customer")
-	@Operation(summary = "Customer Login")
+	@PostMapping(path = "/login")
+	@Operation(summary = "Allows customer or worker to log in")
 	@ApiResponses({
-			@ApiResponse(responseCode = "200", description = "Successful Operation", content = @Content(mediaType = "text/plain")),
+			@ApiResponse(responseCode = "200", description = "Successful Operation", content = @Content(mediaType = "application/json", schema = @Schema(implementation = JWTResponse.class))),
 			@ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	public String loginCustomer(@RequestParam("email") String username, @RequestParam("password") String password) {
-		return publicService.loginCustomer(username, password);
+	public JWTResponse login(@RequestParam("email") String email, @RequestParam("password") String password) {
+		return publicService.login(email, DigestUtils.sha3_256Hex(password));
 	}
 
-	@PostMapping(path = "/login/worker")
-	@Operation(summary = "Worker Login")
-	@ApiResponses({
-			@ApiResponse(responseCode = "200", description = "Successful Operation", content = @Content(mediaType = "text/plain")),
-			@ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-	})
-	public String loginWorker(@RequestParam("email") String username, @RequestParam("password") String password) {
-		return publicService.loginWorker(username, password);
-	}
-
-	@PostMapping(path = "/reset/user")
-	@Operation(summary = "User Password Reset")
+	@PostMapping(path = "/reset")
+	@Operation(summary = "Allows customer or worker to reset password")
 	@ApiResponses({
 			@ApiResponse(responseCode = "200", description = "Successful Operation"),
 			@ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	public void resetUser(
-			@RequestParam("username") String username) {
-		publicService.resetUser(username);
-	}
-
-	@PostMapping(path = "/reset/admin")
-	@Operation(summary = "Admin Password Reset")
-	@ApiResponses({
-			@ApiResponse(responseCode = "200", description = "Successful Operation"),
-			@ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-	})
-	public void resetAdmin(
-			@RequestParam("username") String username) {
-			publicService.resetAdmin(username);
+	public void resetPassword(@RequestParam("email") String email) {
+			publicService.resetPassword(email);
 	}
 
 }

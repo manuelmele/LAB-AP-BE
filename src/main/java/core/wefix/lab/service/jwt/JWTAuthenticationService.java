@@ -31,25 +31,14 @@ public class JWTAuthenticationService {
 					.findByUserRoleAndEmailAndUserPassword(role, email, password)
 					.map(user -> jwtService.create(role, email, password))
 					.orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
-		} else if (accountRepository.findByUserRoleAndEmailAndResetCode(role, email, password).isPresent()) {
-			// It proceeds with BadCredentialsException
-			Account account = accountRepository.findByUserRoleAndEmailAndResetCode(role, email, password)
-					.orElseThrow(() -> new BadCredentialsException("Invalid username or password."));
-			// Log in with new password
-			if (LocalDateTime.now().isBefore(account.getDateReset())) {
-				account.setUserPassword(password);
-				accountRepository.save(account);
-				return jwtService.create(role, email, password);
-			} else
-				// Log in with new password failed (already spent 24 hours to reset password with that contained in email body)
-				throw new BadCredentialsException("Change password expired. Get a new email with password");
 		}
+		// It proceeds with BadCredentialsException
 		throw new BadCredentialsException("Invalid username o password");
 	}
 
 	/**
 	 * Allows admin/user to reset their password
-	 * @param role: identifies 'Admin' or 'User' role
+	 * @param role: identifies 'Customer' or 'Worker' role
 	 * @param email: the email to identify admin/user that wants to be proceeded with reset
 	 */
 	public void reset(Role role, String email) throws BadCredentialsException {
