@@ -43,9 +43,8 @@ public class CustomMailSender {
         }
     }
 
-    public boolean sendResetUser(String to, Map<String, String> data){
-        if(!data.containsKey("password")) return false;
-
+    public boolean sendReset(String to, Map<String, String> data) {
+        if (!data.containsKey("password")) return false;
         String document = "";
         try {
             document = Files.readString(Paths.get("src/main/resources/templates/recoveryPassword.html"));
@@ -53,17 +52,7 @@ public class CustomMailSender {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        sendMail(to, "Reset Password",document,true, "Recovery Password");
-        return true;
-    }
-
-    public boolean sendResetAdmin(String to, Map<String, String> data){
-        if(!data.containsKey("password")) return false;
-
-        String document = "New password: " + data.get("password");
-
-        sendMail(to, "Reset Password", document, false, "Recovery Password");
+        sendMail(to, "Reset Password", document, true, "Recovery Password");
         return true;
     }
 

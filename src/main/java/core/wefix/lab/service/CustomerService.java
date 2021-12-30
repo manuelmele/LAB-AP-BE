@@ -1,20 +1,28 @@
 package core.wefix.lab.service;
 
+import core.wefix.lab.configuration.error.ErrorResponse;
 import core.wefix.lab.entity.Account;
 import core.wefix.lab.repository.AccountRepository;
 import core.wefix.lab.service.jwt.JWTAuthenticationService;
 import core.wefix.lab.service.jwt.JWTService;
+import core.wefix.lab.utils.object.response.GetCustomerResponse;
 import core.wefix.lab.utils.object.staticvalues.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 
 @Slf4j
@@ -24,22 +32,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class CustomerService {
 	private final AccountRepository accountRepository;
 	private final JWTAuthenticationService authenticationService;
+	private final PublicService publicService;
 
 	/**
-	 * Allows retrieving of all user data from his authentication
-	 * @return an Account: all information about user logged
+	 * Allows to retrieve all profile customer data
+	 * @return a GetCustomerResponse: all information to send as response for a certain customer
 	 */
-	public Account getUserInfo(){
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null) {
-			User user = ((User) authentication.getPrincipal());
-			if (!user.getAuthorities().contains(new SimpleGrantedAuthority(Role.Customer.name()))) {
-				throw new JWTService.TokenVerificationException();
-			}
-			return accountRepository.findByUserRoleAndEmail(Role.Customer, user.getUsername())
-					.orElseThrow(JWTService.TokenVerificationException::new);
-		}
-		throw new JWTService.TokenVerificationException();
+	public GetCustomerResponse getProfile() {
+		return new GetCustomerResponse(publicService.getWorkerOrCustomerInfo(Role.Customer).getFirstName(),
+				publicService.getWorkerOrCustomerInfo(Role.Customer).getSecondName(),
+				publicService.getWorkerOrCustomerInfo(Role.Customer).getEmail(),
+				publicService.getWorkerOrCustomerInfo(Role.Customer).getBio(),
+				publicService.getWorkerOrCustomerInfo(Role.Customer).getPhotoProfile());
 	}
 
 	/**
