@@ -43,6 +43,10 @@ public class PublicService {
 		// Create new account
 		Role role = Role.Customer;
 		String shaPassword = DigestUtils.sha3_256Hex(registerRequest.getUserPassword());
+		log.info("COSA INSERISCO = " + registerRequest.getEmail() + " "
+		+ registerRequest.getFirstName() + " " + registerRequest.getSecondName() +
+				" " + registerRequest.getUserPassword() + " " + registerRequest.getUserConfirmPassword() + " "
+		);
 		accountRepository.save(
 				new Account(registerRequest.getFirstName(),
 						registerRequest.getSecondName(),
