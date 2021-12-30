@@ -60,15 +60,14 @@ public class PublicServiceTest {
     @Test
     void signup() {
         String newCustomerMail = "newcustomer.wefix@mail.com";
-        RegisterRequest registerRequest = new RegisterRequest("CustomerName",
-                "CustomerSurname",
+        RegisterRequest registerRequest = new RegisterRequest("NewCustomerName",
+                "NewCustomerSurname",
                 newCustomerMail,
                 defaultPassword,
                 defaultPassword);
         publicService.signUp(registerRequest);
         assertEquals(3, accountRepository.findAll().size());
         HashSet<String> accountEmails = accountRepository.findAll().stream().map(Account::getEmail).collect(Collectors.toCollection(HashSet::new));
-
         assertEquals(Set.of(customerMail, workerMail, newCustomerMail), accountEmails);
     }
 }
