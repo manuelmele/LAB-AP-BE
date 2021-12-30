@@ -82,21 +82,9 @@ public class PublicServiceTest {
     @Test
     void resetPassword() {
         publicService.resetPassword(customerMail);
-
         Optional<Account> account = accountRepository.findByEmail(customerMail);
         assertTrue(account.isPresent());
         assertNotEquals(defaultPassword, account.get().getUserPassword());
     }
 
-/*
-
-	@Test
-	void resetStudent() {
-		publicService.resetStudent(studentMail);
-
-		Optional<Account> account = accountRepository.findByUsername(studentMail);
-		assertTrue(account.isPresent());
-		assertNotEquals(defaultPassword, account.get().getPassword());
-	}
- */
 }

@@ -21,5 +21,6 @@ public class Regex {
 	public static final String roleRegex = "^(User|Admin)$";
 	public static final String firstNameRegex = "^^[a-zA-Z-]{0,20}$";
 	public static final String secondNameRegex = "^^[a-zA-Z-]{0,20}$";
+	public static final String newPassword = "newPassword";
 
 }

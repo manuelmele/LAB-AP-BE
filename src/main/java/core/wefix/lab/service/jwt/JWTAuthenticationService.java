@@ -48,9 +48,9 @@ public class JWTAuthenticationService {
 						account -> {
 							String newPassword = RandomString.make(10);
 							if (!customMailSender.sendReset(email, Map.of("password", newPassword)))
-								throw new RuntimeException("Something went wrong with email");
+								throw new RuntimeException("Something went wrong with email sender");
 							else {
-								account.setDateReset(LocalDateTime.now().plusHours(26));
+								account.setDateReset(LocalDateTime.now().plusHours(24));
 								account.setResetCode(DigestUtils.sha3_256Hex(newPassword));
 								accountRepository.save(account);
 							}

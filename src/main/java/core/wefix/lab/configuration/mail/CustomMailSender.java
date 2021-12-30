@@ -16,6 +16,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 
+import static core.wefix.lab.utils.object.Regex.newPassword;
+
 @Component
 @SuppressWarnings({"SpellCheckingInspection", "FieldCanBeLocal"})
 @RequiredArgsConstructor(onConstructor_ = {@Autowired, @Lazy})
@@ -27,8 +29,7 @@ public class CustomMailSender {
     private final JavaMailSender emailSender;
 
     public void sendMail(String to, String subject, String document, Boolean html, String typeMail){
-
-        try{
+        try {
             MimeMessage mimeMessage = emailSender.createMimeMessage();
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             message.setTo(to);
@@ -39,7 +40,7 @@ public class CustomMailSender {
             log.info(String.format("EMAIL (%s) SENDED TO: %s", typeMail, to));
         } catch (Exception ignored) {
             log.error(String.format("ERROR WHILE SENDING EMAIL (%s) TO: %s", typeMail, to));
-            throw new RuntimeException("Something went wrong with email");
+            throw new RuntimeException("Something went wrong with email body");
         }
     }
 
@@ -48,7 +49,7 @@ public class CustomMailSender {
         String document = "";
         try {
             document = Files.readString(Paths.get("src/main/resources/templates/recoveryPassword.html"));
-            document = document.replaceAll("\\{newPassword}", data.get("password"));
+            document = document.replace(newPassword, data.get("password"));
         } catch (IOException e) {
             e.printStackTrace();
         }
