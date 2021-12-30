@@ -37,9 +37,9 @@ public class JWTAuthenticationService {
 	}
 
 	/**
-	 * Allows admin/user to reset their password
+	 * Allows customer/worker to reset their password
 	 * @param role: identifies 'Customer' or 'Worker' role
-	 * @param email: the email to identify admin/user that wants to be proceeded with reset
+	 * @param email: the email to identify customer/worker that wants to be proceeded with reset
 	 */
 	public void reset(Role role, String email) throws BadCredentialsException {
 		accountRepository
@@ -47,29 +47,12 @@ public class JWTAuthenticationService {
 				.ifPresentOrElse(
 						account -> {
 							String newPassword = RandomString.make(10);
-							switch (role) {
-								case Customer: {
-									if (!customMailSender.sendResetUser(email, Map.of("password", newPassword))) {
-										throw new RuntimeException("Something went wrong with email");
-									}else{
-										account.setDateReset(LocalDateTime.now().plusHours(26));
-										account.setResetCode(DigestUtils.sha3_256Hex(newPassword));
-										accountRepository.save(account);
-									}
-									break;
-								}
-								case Worker: {
-									if (!customMailSender.sendResetAdmin(email, Map.of("password", newPassword))) {
-										throw new RuntimeException("Something went wrong with email");
-									}else{
-										account.setDateReset(LocalDateTime.now().plusHours(26));
-										account.setResetCode(DigestUtils.sha3_256Hex(newPassword));
-										accountRepository.save(account);
-									}
-									break;
-								}
-								default:
-									throw new RuntimeException("Something went wrong with reset");
+							if (!customMailSender.sendReset(email, Map.of("password", newPassword)))
+								throw new RuntimeException("Something went wrong with email");
+							else {
+								account.setDateReset(LocalDateTime.now().plusHours(26));
+								account.setResetCode(DigestUtils.sha3_256Hex(newPassword));
+								accountRepository.save(account);
 							}
 						},
 						() -> {
