@@ -51,5 +51,30 @@ public class PublicApiControllerTest {
         assertEquals(token.getJwt(), response.getBody().getJwt());
     }
 
+/*
+	@Test
+	void loginUser() {
+		String token = "test";
+		given(publicService.loginUser(any(), any())).willReturn(token);
 
+		ResponseEntity<String> response =
+				restTemplate.exchange(
+						"/api/easyparking/login/user?username={username}&password={password}", HttpMethod.POST, null,
+						String.class, userMail, defaultPassword);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertNotNull(response.getBody());
+		assertEquals(token, response.getBody());
+	}
+
+		@Test
+	void resetStudent() {
+		ResponseEntity<String> response =
+				restTemplate.exchange(
+						"/api/reset/student?username={username}", HttpMethod.POST, null,
+						String.class, studentMail);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+	}
+ */
 }

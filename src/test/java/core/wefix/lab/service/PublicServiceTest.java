@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -70,4 +71,21 @@ public class PublicServiceTest {
         HashSet<String> accountEmails = accountRepository.findAll().stream().map(Account::getEmail).collect(Collectors.toCollection(HashSet::new));
         assertEquals(Set.of(customerMail, workerMail, newCustomerMail), accountEmails);
     }
+
+/*
+    @Test
+    void loginUser() {
+        String token = publicService.loginUser(userMail, defaultPassword);
+        assertNotNull(token);
+    }
+
+	@Test
+	void resetStudent() {
+		publicService.resetStudent(studentMail);
+
+		Optional<Account> account = accountRepository.findByUsername(studentMail);
+		assertTrue(account.isPresent());
+		assertNotEquals(defaultPassword, account.get().getPassword());
+	}
+ */
 }
