@@ -51,30 +51,30 @@ public class PublicApiControllerTest {
         assertEquals(token.getJwt(), response.getBody().getJwt());
     }
 
-/*
-	@Test
-	void loginUser() {
-		String token = "test";
-		given(publicService.loginUser(any(), any())).willReturn(token);
+    @Test
+    void login() {
+        JWTResponse token = new JWTResponse("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXNzd29yZCI6IjM2Mzk5OWY3OTE4YmI4NDI2MGY0ODFjY2VhZWQzOTZmYjA0NmU4ZGMyNTc1MGM1YzNhZTBlODA4OGFlMTdiMjIiLCJyb2xlIjoiQ3VzdG9tZXIiLCJpYXQiOjE2NDA4NjU4MzUsImVtYWlsIjoicHJvdmFlbWFpbEBnbWFpbDEuY29tIn0.uCKtDQcTI6O0hTXhGzX0ZkUz9gAuKEtOQRC97MZHZhw");
+        given(publicService.login(any(), any())).willReturn(token);
+        RegisterRequest registerRequest = new RegisterRequest();
 
-		ResponseEntity<String> response =
-				restTemplate.exchange(
-						"/api/easyparking/login/user?username={username}&password={password}", HttpMethod.POST, null,
-						String.class, userMail, defaultPassword);
+        ResponseEntity<JWTResponse> response =
+                restTemplate.exchange(
+                        "/wefix/public/login?email={email}&password={password}",  HttpMethod.POST, null,
+                        JWTResponse.class, userMail, defaultPassword);
 
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertNotNull(response.getBody());
-		assertEquals(token, response.getBody());
-	}
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(token.getJwt(), response.getBody().getJwt());
+    }
 
-		@Test
-	void resetStudent() {
-		ResponseEntity<String> response =
-				restTemplate.exchange(
-						"/api/reset/student?username={username}", HttpMethod.POST, null,
-						String.class, studentMail);
+    @Test
+    void reset() {
+        ResponseEntity<String> response =
+                restTemplate.exchange(
+                        "/wefix/public/reset?email={email}",  HttpMethod.POST, null,
+                        String.class, userMail);
 
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-	}
- */
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
 }

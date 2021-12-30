@@ -3,6 +3,7 @@ package core.wefix.lab.service;
 import core.wefix.lab.entity.Account;
 import core.wefix.lab.repository.AccountRepository;
 import core.wefix.lab.utils.object.request.RegisterRequest;
+import core.wefix.lab.utils.object.response.JWTResponse;
 import core.wefix.lab.utils.object.staticvalues.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -19,11 +20,11 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import javax.transaction.Transactional;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -72,12 +73,22 @@ public class PublicServiceTest {
         assertEquals(Set.of(customerMail, workerMail, newCustomerMail), accountEmails);
     }
 
-/*
     @Test
-    void loginUser() {
-        String token = publicService.loginUser(userMail, defaultPassword);
+    void login() {
+        JWTResponse token = publicService.login(customerMail, DigestUtils.sha3_256Hex(defaultPassword));
         assertNotNull(token);
     }
+
+    @Test
+    void resetPassword() {
+        publicService.resetPassword(customerMail);
+
+        Optional<Account> account = accountRepository.findByEmail(customerMail);
+        assertTrue(account.isPresent());
+        assertNotEquals(defaultPassword, account.get().getUserPassword());
+    }
+
+/*
 
 	@Test
 	void resetStudent() {
