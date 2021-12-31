@@ -1,5 +1,6 @@
 package core.wefix.lab.utils.object.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,10 +10,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetCustomerResponse {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class GetProfileResponse {
 	private String firstName;
 	private String secondName;
 	private String email;
 	private String bio;
-	private byte[] photo_profile;
+	private byte[] photoProfile;
+	private String pIva;
+	private String identityCardNumber;
 }

@@ -54,5 +54,4 @@ public class PublicApiController {
 	public void resetPassword(@RequestParam("email") String email) {
 			publicService.resetPassword(email);
 	}
-
 }

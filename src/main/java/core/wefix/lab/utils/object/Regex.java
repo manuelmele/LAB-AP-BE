@@ -18,6 +18,8 @@ public class Regex {
 	public static final String totalRegex = "^(?:\\d{1,5}\\.\\d{1,2})$|^\\d{1,5}$";
 	public static final String emailRegex = "^[_a-z0-9-]+(\\.[_a-z0-9-]+)*@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,})$";
 	public static final String passwordRegex = "^(?=.*?[0-9])(?=.*?[a-z])(?=.*?[A-Z])(.{8,30})$";
+	public static final String bioRegex = "^[A-Za-z\\\\d@!\\\\\\\"#$%&\\\\'()*+,-.\\\\/:;<=>?@^_`\\\\{|\\\\}~\\\\sÀ-ÿ\\\\[\\\\]]{0,128}$";
+
 	public static final String roleRegex = "^(User|Admin)$";
 	public static final String firstNameRegex = "^^[a-zA-Z-]{0,20}$";
 	public static final String secondNameRegex = "^^[a-zA-Z-]{0,20}$";

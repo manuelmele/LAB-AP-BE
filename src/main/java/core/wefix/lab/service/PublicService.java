@@ -85,10 +85,10 @@ public class PublicService {
 	}
 
 	public void resetPassword(String email) {
-		Optional<Account> retrieveAccountThroughtPasssword = accountRepository.findByEmail(email);
-		if (retrieveAccountThroughtPasssword.isPresent()) {
+		Optional<Account> retrieveAccountThroughPassword = accountRepository.findByEmail(email);
+		if (retrieveAccountThroughPassword.isPresent()) {
 			// It proceeds with reset
-			authenticationService.reset(retrieveAccountThroughtPasssword.get().getUserRole(), email);
+			authenticationService.reset(retrieveAccountThroughPassword.get().getUserRole(), email);
 		} else throw new BadCredentialsException("Invalid username");
 	}
 

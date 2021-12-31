@@ -37,7 +37,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final TokenAuthenticationProvider authenticationProvider;
     private static final RequestMatcher PROTECTED_URLS = new OrRequestMatcher(
-        new AntPathRequestMatcher("/wefix/customer/**"),
+        new AntPathRequestMatcher("/wefix/account/**"),
         new AntPathRequestMatcher("/wefix/worker/**"),
         new AntPathRequestMatcher("/payment-ticket/**"),
         new AntPathRequestMatcher("/payment-fine/**")
@@ -61,7 +61,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(restAuthenticationFilter(), AnonymousAuthenticationFilter.class)
             .authorizeRequests()
-            .antMatchers("/wefix/customer/**", "/wefix/worker/**", "/payment-ticket/**", "/payment-fine/**")
+            .antMatchers("/wefix/account/**", "/wefix/worker/**", "/payment-ticket/**", "/payment-fine/**")
             .authenticated()
             .and()
             .csrf().disable()

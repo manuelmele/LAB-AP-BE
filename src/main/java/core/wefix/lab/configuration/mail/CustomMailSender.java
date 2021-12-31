@@ -24,7 +24,7 @@ import static core.wefix.lab.utils.object.Regex.newPassword;
 public class CustomMailSender {
 
     private final String fromName = "WeFix";
-    private final String from = "8419133ac9-0f61af@inbox.mailtrap.io";
+    private final String from = "f2e2b6cc09-41e47d@inbox.mailtrap.io";
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final JavaMailSender emailSender;
 
