@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,16 +38,16 @@ public class CustomerApiController {
     GetCustomerResponse getProfile() {
         return customerService.getProfile();
     }
-/*
+
     @PutMapping(path = "/complete/signup/", produces = "application/json", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    @Operation(summary = "Allows customer to complete his signup")
+    @Operation(summary = "Allows customer to complete his signup with bio and photo profile")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful Operation"),
             @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    ResponseEntity<ErrorResponse> updateMV(@RequestParam("bio") String bio, @RequestParam("photoProfile") MultipartFile mvId) {
-        return customerService.updateMV(vehicleId, mvId);
+    void completeSignUp(@RequestParam("bio") String bio, @RequestParam("photoProfile") MultipartFile photoProfile) {
+        customerService.completeSignUp(bio, photoProfile);
     }
- */
+
 }

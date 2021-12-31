@@ -13,10 +13,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,23 +90,6 @@ public class PublicService {
 			// It proceeds with reset
 			authenticationService.reset(retrieveAccountThroughtPasssword.get().getUserRole(), email);
 		} else throw new BadCredentialsException("Invalid username");
-	}
-
-	/**
-	 * Allows retrieving of all customer/worker data from his authentication
-	 * @return an Account: all information about customer/worker logged
-	 */
-	public Account getWorkerOrCustomerInfo(Role role){
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null) {
-			User user = ((User) authentication.getPrincipal());
-			if (!user.getAuthorities().contains(new SimpleGrantedAuthority(role.name()))) {
-				throw new JWTService.TokenVerificationException();
-			}
-			return accountRepository.findByUserRoleAndEmail(role, user.getUsername())
-					.orElseThrow(JWTService.TokenVerificationException::new);
-		}
-		throw new JWTService.TokenVerificationException();
 	}
 
 }
