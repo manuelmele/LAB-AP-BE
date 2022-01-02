@@ -70,7 +70,7 @@ public class AccountApiController {
             @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    void completeSignUp(@RequestBody UpdateProfileRequest updateProfileRequest) {
+    void updateProfile(@RequestBody UpdateProfileRequest updateProfileRequest) {
         accountService.updateProfile(updateProfileRequest);
     }
 }
