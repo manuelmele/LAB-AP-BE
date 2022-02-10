@@ -15,7 +15,7 @@ public class Regex {
 	public static final String widthRegex = "^(?:\\d{1,2}\\.\\d{1,2})$|^\\d{1,2}$";
 	public static final String typeRegex = "^(Nastro|Pettine|Spina)$";
 	public static final String parkingAreaStatusRegex = "^(Free|Busy|Damaged|Deleted)$";
-	public static final String totalRegex = "^(?:\\d{1,5}\\.\\d{1,2})$|^\\d{1,5}$";
+	public static final String priceRegex = "^(?:\\d{1,10}\\.\\d{2,2})$";
 	public static final String emailRegex = "^[_a-z0-9-]+(\\.[_a-z0-9-]+)*@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,})$";
 	public static final String passwordRegex = "^(?=.*?[0-9])(?=.*?[a-z])(?=.*?[A-Z])(.{8,30})$";
 	public static final String bioRegex = "^^[A-Za-z\\d@!\\\"#$%&\\'()*+,-.\\/:;<=>?@^_`\\{|\\}~\\sÀ-ÿ\\[\\]]{0,128}$";
@@ -24,5 +24,9 @@ public class Regex {
 	public static final String firstNameRegex = "^^[a-zA-Z-]{0,20}$";
 	public static final String secondNameRegex = "^^[a-zA-Z-]{0,20}$";
 	public static final String newPassword = "newPassword";
+	public static final String descriptionRegex = "^^[A-Za-z\\d@!\\\"#$%&\\'()*+,-.\\/:;<=>?@^_`\\{|\\}~\\sÀ-ÿ\\[\\]]{0,256}$";
+	public static final String titleRegex = "^^[A-Za-z\\d@!\\\"#$%&\\'()*+,-.\\/:;<=>?@^_`\\{|\\}~\\sÀ-ÿ\\[\\]]{0,64}$";
+
+
 
 }
