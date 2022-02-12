@@ -1,9 +1,12 @@
 package core.wefix.lab.service;
 
 import core.wefix.lab.entity.Account;
+import core.wefix.lab.entity.Gallery;
 import core.wefix.lab.repository.AccountRepository;
+import core.wefix.lab.repository.GalleryRepository;
 import core.wefix.lab.service.jwt.JWTAuthenticationService;
 import core.wefix.lab.service.jwt.JWTService;
+import core.wefix.lab.utils.object.request.InsertNewProductRequest;
 import core.wefix.lab.utils.object.request.RegisterRequest;
 import core.wefix.lab.utils.object.request.UpdateProfileRequest;
 import core.wefix.lab.utils.object.response.GetProfileResponse;
@@ -128,5 +131,6 @@ public class AccountService {
 		account.setBio(updateProfileRequest.getBio());
 		accountRepository.save(account);
 	}
+
 
 }

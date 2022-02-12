@@ -2,9 +2,12 @@ package core.wefix.lab.controller;
 
 import core.wefix.lab.configuration.error.ErrorResponse;
 import core.wefix.lab.service.AccountService;
+import core.wefix.lab.utils.object.request.InsertNewProductRequest;
 import core.wefix.lab.utils.object.request.UpdateProfileRequest;
 import core.wefix.lab.utils.object.response.GetProfileResponse;
+import core.wefix.lab.utils.object.response.GetWorkersCategoriesResponse;
 import core.wefix.lab.utils.object.response.JWTResponse;
+import core.wefix.lab.utils.object.staticvalues.Category;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,6 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -73,4 +78,17 @@ public class AccountApiController {
     void updateProfile(@RequestBody UpdateProfileRequest updateProfileRequest) {
         accountService.updateProfile(updateProfileRequest);
     }
+
+
+    @GetMapping(path = "/categories", produces = "application/json")
+    @Operation(summary = "Allows to get all workers categories")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    GetWorkersCategoriesResponse getWorkersCategories() {
+        return new GetWorkersCategoriesResponse(List.of(Category.values()));
+    }
+
 }

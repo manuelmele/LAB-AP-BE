@@ -2,6 +2,7 @@ package core.wefix.lab.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import core.wefix.lab.utils.object.staticvalues.Category;
 import core.wefix.lab.utils.object.staticvalues.Role;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.*;
@@ -71,6 +72,11 @@ public class Account implements Serializable {
 	@Basic
 	@Column(name = "identity_card_number", length = 7)
 	private String identityCardNumber;
+
+	@Basic
+	@Column(name = "category", length = 32)
+	@Enumerated(EnumType.STRING)
+	private Category userCategory;
 
 	public Account(String firstName, String secondName, String email, String userPassword, Role userRole) {
 		this.firstName = firstName;
