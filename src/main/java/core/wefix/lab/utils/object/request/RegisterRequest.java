@@ -18,38 +18,44 @@ public class RegisterRequest {
 	private String userPassword;
 	private String userConfirmPassword;
 
-	public static boolean validateRegisterRequestJsonFields(RegisterRequest registerRequest) {
+	public static String validateRegisterRequestJsonFields(RegisterRequest registerRequest) {
 
 		if (!registerRequest.getFirstName().matches(firstNameRegex) || registerRequest.getFirstName() == null) {
-			System.out.println("Json field \"firstName\" : " + registerRequest.getFirstName() + " is invalid");
-			return false;
+			String validationError = "Json field \"firstName\" : " + registerRequest.getFirstName() + " is invalid";
+			System.out.println(validationError);
+			return validationError;
 		}
 
 		if (!registerRequest.getSecondName().matches(secondNameRegex) || registerRequest.getSecondName() == null) {
-			System.out.println("Json field \"secondName\" : " + registerRequest.getSecondName() + " is invalid");
-			return false;
+			String validationError = "Json field \"secondName\" : " + registerRequest.getSecondName() + " is invalid";
+			System.out.println(validationError);
+			return validationError;
 		}
 
 		if (!registerRequest.getEmail().matches(emailRegex) || registerRequest.getEmail() == null) {
-			System.out.println("Json field \"email\" : " + registerRequest.getEmail() + " is invalid");
-			return false;
+			String validationError = "Json field \"email\" : " + registerRequest.getEmail() + " is invalid";
+			System.out.println(validationError);
+			return validationError;
 		}
 
 		if (!registerRequest.getUserPassword().matches(passwordRegex) || registerRequest.getUserPassword() == null) {
-			System.out.println("Json field \"password\" : " + registerRequest.getUserPassword() + " is invalid");
-			return false;
+			String validationError = "Json field \"password\" : " + registerRequest.getUserPassword() + " is invalid";
+			System.out.println(validationError);
+			return validationError;
 		}
 
 		if (!registerRequest.getUserConfirmPassword().matches(passwordRegex) || registerRequest.getUserConfirmPassword() == null) {
-			System.out.println("Json field \"confirmPassword\" : " + registerRequest.getUserConfirmPassword() + " is invalid");
-			return false;
+			String validationError = "Json field \"confirmPassword\" : " + registerRequest.getUserConfirmPassword() + " is invalid";
+			System.out.println(validationError);
+			return validationError;
 		}
 
 		if(!registerRequest.getUserConfirmPassword().equals(registerRequest.getUserPassword())) {
-			System.out.println("Json field \"password and confirmPassword\" : " + registerRequest.getUserPassword() + " and " + registerRequest.getUserConfirmPassword() + " not match");
-			return false;
+			String validationError = "Json field \"password and confirmPassword\" : " + registerRequest.getUserPassword() + " and " + registerRequest.getUserConfirmPassword() + " not match";
+			System.out.println(validationError);
+			return validationError;
 		}
 
-		return  true;
+		return "";
 	}
 }

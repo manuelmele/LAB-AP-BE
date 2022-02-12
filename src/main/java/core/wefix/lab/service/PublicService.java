@@ -35,8 +35,9 @@ public class PublicService {
 	 */
 	public JWTResponse signUp(RegisterRequest registerRequest) {
 		// Validate json body
-		if (!RegisterRequest.validateRegisterRequestJsonFields(registerRequest))
-			throw new IllegalArgumentException("Invalid json body");
+		String validationError = RegisterRequest.validateRegisterRequestJsonFields(registerRequest);
+		if (!validationError.isEmpty())
+			throw new IllegalArgumentException(validationError);
 		// Existing account validate
 		accountRepository.findByEmail(registerRequest.getEmail()).ifPresent((a) -> {
 			throw new DuplicateKeyException("Email already used");});
