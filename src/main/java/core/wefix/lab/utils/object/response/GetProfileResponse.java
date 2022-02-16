@@ -1,6 +1,8 @@
 package core.wefix.lab.utils.object.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import core.wefix.lab.utils.object.staticvalues.Category;
+import core.wefix.lab.utils.object.staticvalues.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,4 +21,6 @@ public class GetProfileResponse {
 	private byte[] photoProfile;
 	private String pIva;
 	private String identityCardNumber;
+	private Role userRole;
+	private Category category;
 }

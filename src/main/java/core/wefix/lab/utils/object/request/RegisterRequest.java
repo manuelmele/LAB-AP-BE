@@ -21,32 +21,31 @@ public class RegisterRequest {
 	public static String validateRegisterRequestJsonFields(RegisterRequest registerRequest) {
 
 		if (!registerRequest.getFirstName().matches(firstNameRegex) || registerRequest.getFirstName() == null) {
-			String validationError = "Json field \"firstName\" is invalid";
+			String validationError = "Json field 'firstName' is invalid";
 			System.out.println(validationError);
 			return validationError;
 		}
 
 		if (!registerRequest.getSecondName().matches(secondNameRegex) || registerRequest.getSecondName() == null) {
-			String validationError = "Json field \"surname\" is invalid";
+			String validationError = "Json field 'surname' is invalid";
 			System.out.println(validationError);
 			return validationError;
 		}
 
 		if (!registerRequest.getEmail().matches(emailRegex) || registerRequest.getEmail() == null) {
-			String validationError = "Json field \"email\" is invalid";
+			String validationError = "Invalid email";
 			System.out.println(validationError);
 			return validationError;
 		}
 
 		if (!registerRequest.getUserPassword().matches(passwordRegex) || registerRequest.getUserPassword() == null) {
-			String validationError = "Json field \"password\" is invalid";
+			String validationError = "Weak password";
 			System.out.println(validationError);
 			return validationError;
 		}
 
-
 		if(!registerRequest.getUserConfirmPassword().equals(registerRequest.getUserPassword())) {
-			String validationError = "Json field \"password and confirmPassword\" don't match";
+			String validationError = "Passwords don't match";
 			System.out.println(validationError);
 			return validationError;
 		}

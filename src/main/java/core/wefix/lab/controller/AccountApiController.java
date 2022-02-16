@@ -2,7 +2,6 @@ package core.wefix.lab.controller;
 
 import core.wefix.lab.configuration.error.ErrorResponse;
 import core.wefix.lab.service.AccountService;
-import core.wefix.lab.utils.object.request.InsertNewProductRequest;
 import core.wefix.lab.utils.object.request.UpdateProfileRequest;
 import core.wefix.lab.utils.object.response.GetProfileResponse;
 import core.wefix.lab.utils.object.response.GetWorkersCategoriesResponse;
@@ -22,6 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.websocket.server.PathParam;
 import java.util.List;
 
 @CrossOrigin
@@ -79,7 +79,6 @@ public class AccountApiController {
         accountService.updateProfile(updateProfileRequest);
     }
 
-
     @GetMapping(path = "/categories", produces = "application/json")
     @Operation(summary = "Allows to get all workers categories")
     @ApiResponses({
@@ -89,6 +88,28 @@ public class AccountApiController {
     })
     GetWorkersCategoriesResponse getWorkersCategories() {
         return new GetWorkersCategoriesResponse(List.of(Category.values()));
+    }
+
+    @GetMapping(path = "/workers{category}", produces = "application/json")
+    @Operation(summary = "Allows to get all workers about one category")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    List<GetProfileResponse> getWorkersOfCategory(@PathParam("category") String category) {
+        return accountService.getWorkersOfCategory(category);
+    }
+
+    @GetMapping(path = "/workers-filter{value}", produces = "application/json")
+    @Operation(summary = "Allows to get list of workers filtered by first name, second name and email")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    List<GetProfileResponse> getWorkersByName(@PathParam("value") String value) {
+        return accountService.getWorkersByFirstNameOrSecondNameOrEmail(value);
     }
 
 }

@@ -1,16 +1,14 @@
 package core.wefix.lab.service;
 
 import core.wefix.lab.entity.Account;
-import core.wefix.lab.entity.Gallery;
 import core.wefix.lab.repository.AccountRepository;
-import core.wefix.lab.repository.GalleryRepository;
 import core.wefix.lab.service.jwt.JWTAuthenticationService;
 import core.wefix.lab.service.jwt.JWTService;
-import core.wefix.lab.utils.object.request.InsertNewProductRequest;
-import core.wefix.lab.utils.object.request.RegisterRequest;
+import core.wefix.lab.utils.object.Regex;
 import core.wefix.lab.utils.object.request.UpdateProfileRequest;
 import core.wefix.lab.utils.object.response.GetProfileResponse;
 import core.wefix.lab.utils.object.response.JWTResponse;
+import core.wefix.lab.utils.object.staticvalues.Category;
 import core.wefix.lab.utils.object.staticvalues.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static core.wefix.lab.utils.object.Regex.bioRegex;
 import static core.wefix.lab.utils.object.Regex.passwordRegex;
@@ -71,7 +71,9 @@ public class AccountService {
 				getCustomerOrWorkerInfo().getBio(),
 				getCustomerOrWorkerInfo().getPhotoProfile(),
 				getCustomerOrWorkerInfo().getPIva(),
-				getCustomerOrWorkerInfo().getIdentityCardNumber());
+				getCustomerOrWorkerInfo().getIdentityCardNumber(),
+				getCustomerOrWorkerInfo().getUserRole(),
+				getCustomerOrWorkerInfo().getUserCategory());
 	}
 
 	/**
@@ -132,5 +134,50 @@ public class AccountService {
 		accountRepository.save(account);
 	}
 
+
+	public List<GetProfileResponse> getWorkersOfCategory(String categoryString) {
+		Account account = getCustomerOrWorkerInfo();
+		// Validate category param
+		if (!categoryString.matches(Regex.categoryRegex))
+			throw new IllegalArgumentException("Invalid category param");
+		Category category = Category.valueOf(categoryString);
+		List<Account> workersRetrieved = accountRepository.findByUserCategoryAndUserRole(category, Role.Worker);
+		List<GetProfileResponse> getProfileResponse = new ArrayList<>();
+		for (Account worker : workersRetrieved) {
+			getProfileResponse.add(new GetProfileResponse(
+					worker.getFirstName(),
+					worker.getSecondName(),
+					worker.getEmail(),
+					worker.getBio(),
+					worker.getPhotoProfile(),
+					worker.getPIva(),
+					worker.getIdentityCardNumber(),
+					worker.getUserRole(),
+					worker.getUserCategory()));
+		}
+		return getProfileResponse;
+	}
+
+	public List<GetProfileResponse> getWorkersByFirstNameOrSecondNameOrEmail(String value) {
+		Account account = getCustomerOrWorkerInfo();
+		// Validate value param
+		if(!value.matches(Regex.firstNameRegex) && !value.matches(Regex.secondNameRegex) && !value.matches(Regex.emailRegex))
+			throw new IllegalArgumentException("Invalid value param");
+		List<Account> workersRetrieved = accountRepository.findByFirstNameOrSecondNameOrEmail(value, value, value);
+		List<GetProfileResponse> getProfileResponse = new ArrayList<>();
+		for (Account worker : workersRetrieved) {
+			getProfileResponse.add(new GetProfileResponse(
+					worker.getFirstName(),
+					worker.getSecondName(),
+					worker.getEmail(),
+					worker.getBio(),
+					worker.getPhotoProfile(),
+					worker.getPIva(),
+					worker.getIdentityCardNumber(),
+					worker.getUserRole(),
+					worker.getUserCategory()));
+		}
+		return getProfileResponse;
+	}
 
 }
