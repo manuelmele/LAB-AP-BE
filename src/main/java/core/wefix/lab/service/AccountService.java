@@ -10,6 +10,7 @@ import core.wefix.lab.utils.object.response.GetProfileResponse;
 import core.wefix.lab.utils.object.response.JWTResponse;
 import core.wefix.lab.utils.object.staticvalues.Category;
 import core.wefix.lab.utils.object.staticvalues.Role;
+import core.wefix.lab.utils.object.staticvalues.StaticObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -24,10 +25,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static core.wefix.lab.utils.object.Regex.bioRegex;
 import static core.wefix.lab.utils.object.Regex.passwordRegex;
+import static core.wefix.lab.utils.object.staticvalues.StaticObject.photoProfileBase;
 
 
 @Slf4j
@@ -83,16 +86,35 @@ public class AccountService {
 	 */
 	public void completeSignUp(String bio, MultipartFile photoProfile) {
 		Account account = getCustomerOrWorkerInfo();
-		// Bio validate
-		if (!bio.matches(bioRegex))
-			throw new IllegalArgumentException("Invalid bio");
-		 accountRepository.findByUserRoleAndEmail(account.getUserRole(), account.getEmail())
-				 .orElseThrow(IllegalArgumentException::new);
-		 account.setBio(bio);
-		try {
-			account.setPhotoProfile(photoProfile.getBytes());
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Invalid photoProfile");
+		if (photoProfile == null){
+			if (!bio.matches(bioRegex))
+				throw new IllegalArgumentException("Invalid bio");
+			accountRepository.findByUserRoleAndEmail(account.getUserRole(), account.getEmail())
+					.orElseThrow(IllegalArgumentException::new);
+			account.setBio(bio);
+			account.setPhotoProfile(photoProfileBase);
+		} else if (bio == null) {
+			account.setBio("");
+			try {
+				account.setPhotoProfile(photoProfile.getBytes());
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Invalid photoProfile");
+			}
+		}else if (bio != null && !photoProfile.isEmpty()) {
+			// Bio validate
+			if (!bio.matches(bioRegex))
+				throw new IllegalArgumentException("Invalid bio");
+			accountRepository.findByUserRoleAndEmail(account.getUserRole(), account.getEmail())
+					.orElseThrow(IllegalArgumentException::new);
+			account.setBio(bio);
+			try {
+				account.setPhotoProfile(photoProfile.getBytes());
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Invalid photoProfile");
+			}
+		} else if (bio == null && photoProfile.isEmpty()){
+			account.setBio("");
+			account.setPhotoProfile(photoProfileBase);
 		}
 		accountRepository.save(account);
 	}

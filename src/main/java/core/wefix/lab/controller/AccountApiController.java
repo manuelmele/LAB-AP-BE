@@ -16,12 +16,14 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.websocket.server.PathParam;
+import java.io.IOException;
 import java.util.List;
 
 @CrossOrigin
@@ -46,14 +48,14 @@ public class AccountApiController {
         return accountService.getProfile();
     }
 
-    @PutMapping(path = "/complete/signup/", produces = "application/json", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(path = "/complete/signup", produces = "application/json", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "Allows user to complete his signup with bio and photo profile")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful Operation"),
             @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    void completeSignUp(@RequestParam("bio") String bio, @RequestParam("photoProfile") MultipartFile photoProfile) {
+    void completeSignUp(@Param("bio") String bio, @Param("photoProfile") MultipartFile photoProfile) throws IOException {
         accountService.completeSignUp(bio, photoProfile);
     }
 
