@@ -19,7 +19,7 @@ public class Regex {
 	public static final String emailRegex = "^[_a-z0-9-]+(\\.[_a-z0-9-]+)*@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,})$";
 	public static final String passwordRegex = "^(?=.*?[0-9])(?=.*?[a-z])(?=.*?[A-Z])(.{8,30})$";
 	public static final String bioRegex = "^^[A-Za-z\\d@!\\\"#$%&\\'()*+,-.\\/:;<=>?@^_`\\{|\\}~\\sÀ-ÿ\\[\\]]{0,128}$";
-	public static final String categoryRegex = "^(Blacksmith|Builder|Carpenter|ChimneySweep|Electrician|Gardener|Glazier|Plasterer|Plumber|Tiler|WindowCleaner)$";
+	public static final String categoryRegex = "^(Plumber|Painter|Electrician|Glazier|Gardener|Carpenter|ChimneySweep|Blacksmith)$";
 
 	public static final String roleRegex = "^(User|Admin)$";
 	public static final String firstNameRegex = "^^[a-zA-Z-]{0,20}$";

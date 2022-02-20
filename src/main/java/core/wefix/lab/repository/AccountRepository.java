@@ -5,6 +5,7 @@ import core.wefix.lab.entity.Account;
 import core.wefix.lab.utils.object.staticvalues.Category;
 import core.wefix.lab.utils.object.staticvalues.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -27,6 +28,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	List<Account> findByUserCategoryAndUserRole(Category category, Role role);
 
-	List<Account> findByFirstNameOrSecondNameOrEmail(String firstName, String secondName, String email);
+	@Query("SELECT a FROM Account a WHERE a.firstName =:firstName OR " +
+			   "a.secondName =:secondName OR a.email =:email OR a.bio LIKE CONCAT('%',:bio,'%') AND a.userCategory =:category AND a.userRole =:role")
+	List<Account> findByFirstNameOrSecondNameOrEmailOrBioAndUserCategoryAndUserRole(String firstName, String secondName, String email, String bio, Category category, Role role);
 
 }

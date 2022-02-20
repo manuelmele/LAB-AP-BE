@@ -55,7 +55,7 @@ public class AccountApiController {
             @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    void completeSignUp(@Param("bio") String bio, @Param("photoProfile") MultipartFile photoProfile) throws IOException {
+    void completeSignUp(@Param("bio") String bio, @Param("photoProfile") MultipartFile photoProfile) {
         accountService.completeSignUp(bio, photoProfile);
     }
 
@@ -92,26 +92,26 @@ public class AccountApiController {
         return new GetWorkersCategoriesResponse(List.of(Category.values()));
     }
 
-    @GetMapping(path = "/workers{category}", produces = "application/json")
+    @GetMapping(path = "/workers/category", produces = "application/json")
     @Operation(summary = "Allows to get all workers about one category")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful Operation"),
             @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    List<GetProfileResponse> getWorkersOfCategory(@PathParam("category") String category) {
+    List<GetProfileResponse> getWorkersOfCategory(@RequestParam("category") String category) {
         return accountService.getWorkersOfCategory(category);
     }
 
-    @GetMapping(path = "/workers-filter{value}", produces = "application/json")
-    @Operation(summary = "Allows to get list of workers filtered by first name, second name and email")
+    @GetMapping(path = "/workers-filter", produces = "application/json")
+    @Operation(summary = "Allows to get list of workers filtered by first name, second name, email, or word contains in bio")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful Operation"),
             @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    List<GetProfileResponse> getWorkersByName(@PathParam("value") String value) {
-        return accountService.getWorkersByFirstNameOrSecondNameOrEmail(value);
+    List<GetProfileResponse> getWorkersByName(@RequestParam(required = false, value = "value") String value, @RequestParam("category") String category) {
+        return accountService.getWorkersByFirstNameOrSecondNameOrEmailOrBio(value, category);
     }
 
 }

@@ -160,7 +160,7 @@ public class AccountService {
 	public List<GetProfileResponse> getWorkersOfCategory(String categoryString) {
 		Account account = getCustomerOrWorkerInfo();
 		// Validate category param
-		if (!categoryString.matches(Regex.categoryRegex))
+		if (!categoryString.matches(Regex.categoryRegex) || categoryString == null)
 			throw new IllegalArgumentException("Invalid category param");
 		Category category = Category.valueOf(categoryString);
 		List<Account> workersRetrieved = accountRepository.findByUserCategoryAndUserRole(category, Role.Worker);
@@ -180,12 +180,19 @@ public class AccountService {
 		return getProfileResponse;
 	}
 
-	public List<GetProfileResponse> getWorkersByFirstNameOrSecondNameOrEmail(String value) {
+	public List<GetProfileResponse> getWorkersByFirstNameOrSecondNameOrEmailOrBio(String value, String categoryString) {
 		Account account = getCustomerOrWorkerInfo();
+		// Check if value param is null
+		if(value == null)
+			return getWorkersOfCategory(categoryString);
 		// Validate value param
-		if(!value.matches(Regex.firstNameRegex) && !value.matches(Regex.secondNameRegex) && !value.matches(Regex.emailRegex))
+		if(!value.matches(Regex.firstNameRegex) && !value.matches(Regex.secondNameRegex) && !value.matches(Regex.emailRegex) && !value.matches(bioRegex))
 			throw new IllegalArgumentException("Invalid value param");
-		List<Account> workersRetrieved = accountRepository.findByFirstNameOrSecondNameOrEmail(value, value, value);
+		// Validate category param
+		if (!categoryString.matches(Regex.categoryRegex) || categoryString.isEmpty())
+			throw new IllegalArgumentException("Invalid category param");
+		Category category = Category.valueOf(categoryString);
+		List<Account> workersRetrieved = accountRepository.findByFirstNameOrSecondNameOrEmailOrBioAndUserCategoryAndUserRole(value, value, value, value, category, Role.Worker);
 		List<GetProfileResponse> getProfileResponse = new ArrayList<>();
 		for (Account worker : workersRetrieved) {
 			getProfileResponse.add(new GetProfileResponse(
