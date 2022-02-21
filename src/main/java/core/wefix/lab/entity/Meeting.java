@@ -26,33 +26,56 @@ public class Meeting implements Serializable {
 	private Long meetingId;
 
 	@Basic
-	@Column(name = "userId_receive")
-	private Long userIdReceiveMeeting;
+	@Column(name = "userId_worker")
+	private Long userIdWorkerMeeting;
 
 	@Basic
-	@Column(name = "userId_assign")
-	private Long userIdAssignMeeting;
+	@Column(name = "userId_customer")
+	private Long userIdCustomerMeeting;
+
+	@Basic
+	@Column(name = "description", length = 128)
+	private String descriptionMeeting;
 
 	@Column(name = "date", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd")
 	private LocalDateTime dateMeeting;
 
 	@Basic
-	@Column(name = "slot_time", columnDefinition="Decimal(2,2)")
-	private Double slotTime;
+	@Column(name = "slot_time", length = 8)
+	private String slotTime;
 
 	@Basic
 	@Column(name = "accepted")
 	private Boolean acceptedMeeting;
 
-	@OnDelete(action = CASCADE)
-	@ManyToOne(cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "userId_receive", referencedColumnName = "id", insertable = false, updatable = false)
-	private Account userIdReceiveAccountMeeting;
+	@Basic
+	@Column(name = "started")
+	private Boolean startedMeeting;
+
+	@Basic
+	@Column(name = "lat")
+	private Double latPosition;
+
+	@Basic
+	@Column(name = "lng")
+	private Double lngPosition;
 
 	@OnDelete(action = CASCADE)
 	@ManyToOne(cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "userId_assign", referencedColumnName = "id", insertable = false, updatable = false)
-	private Account userIdAssignAccountMeeting;
+	@JoinColumn(name = "userId_worker", referencedColumnName = "id", insertable = false, updatable = false)
+	private Account userIdWorkerAccountMeeting;
 
+	@OnDelete(action = CASCADE)
+	@ManyToOne(cascade = CascadeType.REMOVE)
+	@JoinColumn(name = "userId_customer", referencedColumnName = "id", insertable = false, updatable = false)
+	private Account userIdCustomerAccountMeeting;
+
+	public Meeting(Long accountIdWorker, Long accountIdCustomer, String description, LocalDateTime date, String slot_time) {
+		this.userIdWorkerMeeting = accountIdWorker;
+		this.userIdCustomerMeeting = accountIdCustomer;
+		this.descriptionMeeting = description;
+		this.dateMeeting = date;
+		this.slotTime = slot_time;
+	}
 }
