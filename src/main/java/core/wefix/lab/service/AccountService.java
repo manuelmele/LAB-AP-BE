@@ -1,12 +1,15 @@
 package core.wefix.lab.service;
 
 import core.wefix.lab.entity.Account;
+import core.wefix.lab.entity.Review;
 import core.wefix.lab.repository.AccountRepository;
+import core.wefix.lab.repository.ReviewRepository;
 import core.wefix.lab.service.jwt.JWTAuthenticationService;
 import core.wefix.lab.service.jwt.JWTService;
 import core.wefix.lab.utils.object.Regex;
 import core.wefix.lab.utils.object.request.UpdateProfileRequest;
 import core.wefix.lab.utils.object.response.GetProfileResponse;
+import core.wefix.lab.utils.object.response.GetReviewsResponse;
 import core.wefix.lab.utils.object.response.JWTResponse;
 import core.wefix.lab.utils.object.staticvalues.Category;
 import core.wefix.lab.utils.object.staticvalues.Role;
@@ -28,8 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static core.wefix.lab.utils.object.Regex.bioRegex;
-import static core.wefix.lab.utils.object.Regex.passwordRegex;
+import static core.wefix.lab.utils.object.Regex.*;
 import static core.wefix.lab.utils.object.staticvalues.StaticObject.photoProfileBase;
 
 
@@ -39,6 +41,7 @@ import static core.wefix.lab.utils.object.staticvalues.StaticObject.photoProfile
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class AccountService {
 	private final AccountRepository accountRepository;
+	private final ReviewRepository reviewRepository;
 	private final JWTAuthenticationService authenticationService;
 
 	/**
@@ -67,16 +70,53 @@ public class AccountService {
 	 * Allows to retrieve all user profile data
 	 * @return a GetCustomerResponse: all information to send as response for a certain user
 	 */
-	public GetProfileResponse getProfile() {
-		return new GetProfileResponse(getCustomerOrWorkerInfo().getFirstName(),
-				getCustomerOrWorkerInfo().getSecondName(),
-				getCustomerOrWorkerInfo().getEmail(),
-				getCustomerOrWorkerInfo().getBio(),
-				getCustomerOrWorkerInfo().getPhotoProfile(),
-				getCustomerOrWorkerInfo().getPIva(),
-				getCustomerOrWorkerInfo().getIdentityCardNumber(),
-				getCustomerOrWorkerInfo().getUserRole(),
-				getCustomerOrWorkerInfo().getUserCategory());
+	public GetProfileResponse getProfile(Long accountId) {
+		getCustomerOrWorkerInfo();
+		Double avgStar = reviewRepository.avgStar(accountId);
+		Account account = accountRepository.findByAccountId(accountId);
+		return new GetProfileResponse(account.getFirstName(),
+				account.getSecondName(),
+				account.getEmail(),
+				account.getBio(),
+				account.getPhotoProfile(),
+				account.getPIva(),
+				account.getIdentityCardNumber(),
+				account.getUserRole(),
+				account.getUserCategory(),
+				avgStar);
+	}
+
+	public GetProfileResponse getWorkerProfile(String emailWorker) {
+		// emailWorker validate
+		if (!emailWorker.matches(emailRegex))
+			throw new IllegalArgumentException("Invalid emailWorker");
+		Account workerAccount = accountRepository.findByEmailAndUserRole(emailWorker, Role.Worker);
+		if (workerAccount != null)
+			return getProfile(workerAccount.getAccountId());
+		else
+			return new GetProfileResponse();
+	}
+
+	public List<GetReviewsResponse> getWorkerReviews(String emailWorker) {
+		getCustomerOrWorkerInfo();
+		// emailWorker validate
+		if (!emailWorker.matches(emailRegex))
+			throw new IllegalArgumentException("Invalid emailWorker");
+		Account workerAccount = accountRepository.findByEmailAndUserRole(emailWorker, Role.Worker);
+		//System.out.println("worker account = " + workerAccount.getAccountId() + " " + workerAccount.getUserCategory());
+		List<Review> reviewsRetrieved;
+		List<GetReviewsResponse> getReviewsResponse = new ArrayList<>();
+		if (workerAccount != null) {
+			reviewsRetrieved = reviewRepository.findByUserIdReceiveReview(workerAccount.getAccountId());
+			for (Review review : reviewsRetrieved)
+				getReviewsResponse.add(new GetReviewsResponse(
+						review.getContent(),
+						review.getStar(),
+						workerAccount.getFirstName(),
+						workerAccount.getSecondName()
+				));
+		}
+		return getReviewsResponse;
 	}
 
 	/**
@@ -158,30 +198,21 @@ public class AccountService {
 
 
 	public List<GetProfileResponse> getWorkersOfCategory(String categoryString) {
-		Account account = getCustomerOrWorkerInfo();
+		getCustomerOrWorkerInfo();
 		// Validate category param
 		if (!categoryString.matches(Regex.categoryRegex) || categoryString == null)
 			throw new IllegalArgumentException("Invalid category param");
 		Category category = Category.valueOf(categoryString);
 		List<Account> workersRetrieved = accountRepository.findByUserCategoryAndUserRole(category, Role.Worker);
 		List<GetProfileResponse> getProfileResponse = new ArrayList<>();
-		for (Account worker : workersRetrieved) {
-			getProfileResponse.add(new GetProfileResponse(
-					worker.getFirstName(),
-					worker.getSecondName(),
-					worker.getEmail(),
-					worker.getBio(),
-					worker.getPhotoProfile(),
-					worker.getPIva(),
-					worker.getIdentityCardNumber(),
-					worker.getUserRole(),
-					worker.getUserCategory()));
-		}
+		for (Account worker : workersRetrieved)
+			getProfileResponse.add(getProfile(worker.getAccountId()));
+
 		return getProfileResponse;
 	}
 
 	public List<GetProfileResponse> getWorkersByFirstNameOrSecondNameOrEmailOrBio(String value, String categoryString) {
-		Account account = getCustomerOrWorkerInfo();
+		getCustomerOrWorkerInfo();
 		// Check if value param is null
 		if(value == null)
 			return getWorkersOfCategory(categoryString);
@@ -194,18 +225,8 @@ public class AccountService {
 		Category category = Category.valueOf(categoryString);
 		List<Account> workersRetrieved = accountRepository.findByFirstNameOrSecondNameOrEmailOrBioAndUserCategoryAndUserRole(value, value, value, value, category, Role.Worker);
 		List<GetProfileResponse> getProfileResponse = new ArrayList<>();
-		for (Account worker : workersRetrieved) {
-			getProfileResponse.add(new GetProfileResponse(
-					worker.getFirstName(),
-					worker.getSecondName(),
-					worker.getEmail(),
-					worker.getBio(),
-					worker.getPhotoProfile(),
-					worker.getPIva(),
-					worker.getIdentityCardNumber(),
-					worker.getUserRole(),
-					worker.getUserCategory()));
-		}
+		for (Account worker : workersRetrieved)
+			getProfileResponse.add(getProfile(worker.getAccountId()));
 		return getProfileResponse;
 	}
 

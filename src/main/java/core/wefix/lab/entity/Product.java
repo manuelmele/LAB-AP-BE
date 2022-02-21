@@ -15,13 +15,13 @@ import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@Table(name = "gallery")
-public class Gallery implements Serializable {
+@Table(name = "product")
+public class Product implements Serializable {
 
 	@Id
 	@Column(name = "id", unique = true, nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long galleryId;
+	private Long productId;
 
 	@Basic
 	@Column(name = "user_id")
@@ -29,7 +29,7 @@ public class Gallery implements Serializable {
 
 	@Lob
 	@Column(name = "image")
-	private byte[] galleryImage;
+	private byte[] productImage;
 
 	@Basic
 	@Column(name = "price", columnDefinition="Decimal(10,2)")
@@ -41,11 +41,11 @@ public class Gallery implements Serializable {
 
 	@Basic
 	@Column(name = "deleted")
-	private Boolean deletedGallery;
+	private Boolean deletedProduct;
 
-	public Gallery(Long userId, byte[] galleryImage, Double price, String description, String title) {
+	public Product(Long userId, byte[] productImage, Double price, String description, String title) {
 		this.userId = userId;
-		this.galleryImage = galleryImage;
+		this.productImage = productImage;
 		this.price = price;
 		this.description = description;
 		this.title = title;
@@ -59,5 +59,5 @@ public class Gallery implements Serializable {
 	@OnDelete(action = CASCADE)
 	@ManyToOne(cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
-	private Account userIdGallery;
+	private Account userIdProduct;
 }

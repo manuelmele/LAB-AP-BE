@@ -1,9 +1,9 @@
 package core.wefix.lab.service;
 
 import core.wefix.lab.entity.Account;
-import core.wefix.lab.entity.Gallery;
+import core.wefix.lab.entity.Product;
 import core.wefix.lab.repository.AccountRepository;
-import core.wefix.lab.repository.GalleryRepository;
+import core.wefix.lab.repository.ProductRepository;
 import core.wefix.lab.service.jwt.JWTService;
 import core.wefix.lab.utils.object.request.InsertNewProductRequest;
 import core.wefix.lab.utils.object.response.GetProductResponse;
@@ -29,7 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class WorkerService {
     private final AccountRepository accountRepository;
-    private final GalleryRepository galleryRepository;
+    private final ProductRepository productRepository;
 
     /**
      * Allows retrieving of all worker data from his authentication
@@ -59,13 +59,13 @@ public class WorkerService {
         if (!InsertNewProductRequest.validateInsertNewProductRequestJsonFields(newProduct))
             throw new IllegalArgumentException("Invalid json body");
         try {
-            Gallery gallery = new Gallery(
+            Product product = new Product(
                     account.getAccountId(),
                     imageGallery.getBytes(),
                     newProduct.getPrice(),
                     newProduct.getDescription(),
                     newProduct.getTitle());
-            galleryRepository.save(gallery);
+            productRepository.save(product);
         } catch (IOException e) {
             throw new IllegalArgumentException("Invalid photoProfile");
         }
@@ -77,15 +77,14 @@ public class WorkerService {
      */
     public List<GetProductResponse> getProducts() {
         Account account = getWorkerInfo();
-        List<Gallery> productsRetrieved = galleryRepository.findByUserIdAndDeletedGalleryFalse(account.getAccountId());
+        List<Product> productsRetrieved = productRepository.findByUserIdAndDeletedProductFalse(account.getAccountId());
         List<GetProductResponse> getProductResponse = new ArrayList<>();
-        for (Gallery gallery : productsRetrieved) {
+        for (Product product : productsRetrieved) {
             getProductResponse.add(new GetProductResponse(
-                    gallery.getGalleryImage(),
-                    gallery.getPrice(),
-                    gallery.getDescription(),
-                    gallery.getTitle()
-                    ));
+                    product.getProductImage(),
+                    product.getPrice(),
+                    product.getDescription(),
+                    product.getTitle()));
         }
         return getProductResponse;
     }
@@ -101,17 +100,17 @@ public class WorkerService {
         // updateProduct validate
         if (!InsertNewProductRequest.validateInsertNewProductRequestJsonFields(updateProduct))
             throw new IllegalArgumentException("Invalid json body");
-        Gallery productRetrieved = galleryRepository.findByGalleryId(productId);
+        Product productRetrieved = productRepository.findByProductId(productId);
         if(!productRetrieved.getUserId().equals(account.getAccountId()))
             throw new JWTService.TokenVerificationException("Worker not authorized to update current productId");
         try {
-            productRetrieved.setGalleryImage(imageGallery.getBytes());
+            productRetrieved.setProductImage(imageGallery.getBytes());
         } catch (IOException e) {
             throw new IllegalArgumentException("Invalid image");}
         productRetrieved.setDescription(updateProduct.getDescription());
         productRetrieved.setPrice(updateProduct.getPrice());
         productRetrieved.setTitle(updateProduct.getTitle());
-        galleryRepository.save(productRetrieved);
+        productRepository.save(productRetrieved);
     }
 
     /**
@@ -120,11 +119,11 @@ public class WorkerService {
      */
     public void deleteProduct(Long productId) {
         Account account = getWorkerInfo();
-        Gallery productRetrieved = galleryRepository.findByGalleryId(productId);
+        Product productRetrieved = productRepository.findByProductId(productId);
         if(!productRetrieved.getUserId().equals(account.getAccountId()))
             throw new JWTService.TokenVerificationException("Worker not authorized to delete current productId");
-        productRetrieved.setDeletedGallery(Boolean.TRUE);
-        galleryRepository.save(productRetrieved);
+        productRetrieved.setDeletedProduct(Boolean.TRUE);
+        productRepository.save(productRetrieved);
     }
 
 }

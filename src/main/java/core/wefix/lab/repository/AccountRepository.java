@@ -14,7 +14,11 @@ import java.util.Optional;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
+	Account findByAccountId(Long accountId);
+
 	Optional<Account> findByEmail(String email);
+
+	Account findByEmailAndUserRole(String email, Role userRole);
 
 	Optional<Account> findByUserRoleAndEmail(Role userRole, String email);
 
@@ -28,8 +32,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	List<Account> findByUserCategoryAndUserRole(Category category, Role role);
 
-	@Query("SELECT a FROM Account a WHERE a.firstName =:firstName OR " +
-			   "a.secondName =:secondName OR a.email =:email OR a.bio LIKE CONCAT('%',:bio,'%') AND a.userCategory =:category AND a.userRole =:role")
+	@Query("SELECT a FROM Account a WHERE (a.userRole =:role AND a.userCategory =:category) AND (a.firstName =:firstName OR " +
+			   "a.secondName =:secondName OR a.email =:email OR a.bio LIKE CONCAT('%',:bio,'%'))")
 	List<Account> findByFirstNameOrSecondNameOrEmailOrBioAndUserCategoryAndUserRole(String firstName, String secondName, String email, String bio, Category category, Role role);
 
 }

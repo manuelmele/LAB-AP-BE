@@ -23,4 +23,5 @@ public class GetProfileResponse {
 	private String identityCardNumber;
 	private Role userRole;
 	private Category category;
+	private Double avgStar;
 }

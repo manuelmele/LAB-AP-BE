@@ -35,13 +35,17 @@ public class Review implements Serializable {
 	@Column(name = "content", length = 256)
 	private String content;
 
+	@Basic
+	@Column(name = "star")
+	private Long star;
+
 	@OnDelete(action = CASCADE)
 	@ManyToOne(cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "userId_receive", referencedColumnName = "id", insertable = false, updatable = false)
-	private Account userIdReceiveAccountReview;
+	private Review userIdReceiveAccountReview;
 
 	@OnDelete(action = CASCADE)
 	@ManyToOne(cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "userId_assign", referencedColumnName = "id", insertable = false, updatable = false)
-	private Account userIdAssignAccountReview;
+	private Review userIdAssignAccountReview;
 }
