@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetMeetingResponse {
+    private Long idMeeting;
     private String firstName;
     private String secondName;
     private String email;

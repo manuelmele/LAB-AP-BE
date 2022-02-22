@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -166,6 +167,7 @@ public class AccountService {
 			for (Meeting meeting : meetingsRetrieved){
 				Account customerAccount = accountRepository.findByAccountId(meeting.getUserIdCustomerMeeting());
 				getMeetingsResponse.add(new GetMeetingResponse(
+						meeting.getMeetingId(),
 						customerAccount.getFirstName(),
 						customerAccount.getSecondName(),
 						customerAccount.getEmail(),
@@ -179,6 +181,37 @@ public class AccountService {
 						meeting.getLatPosition(),
 						meeting.getLngPosition()));
 		}
+		}
+		return getMeetingsResponse;
+	}
+
+	public List<GetMeetingResponse> getCustomerMeetings(String emailCustomer) {
+		getCustomerOrWorkerInfo();
+		// emailWorker validate
+		if (!emailCustomer.matches(emailRegex))
+			throw new IllegalArgumentException("Invalid emailCustomer");
+		Account customerAccount = accountRepository.findByEmailAndUserRole(emailCustomer, Role.Customer);
+		List<Meeting> meetingsRetrieved;
+		List<GetMeetingResponse> getMeetingsResponse = new ArrayList<>();
+		if (customerAccount != null) {
+			meetingsRetrieved = meetingRepository.findByUserIdCustomer(customerAccount.getAccountId());
+			for (Meeting meeting : meetingsRetrieved){
+				Account workerAccount = accountRepository.findByAccountId(meeting.getUserIdWorkerMeeting());
+				getMeetingsResponse.add(new GetMeetingResponse(
+						meeting.getMeetingId(),
+						workerAccount.getFirstName(),
+						workerAccount.getSecondName(),
+						workerAccount.getEmail(),
+						workerAccount.getPhotoProfile(),
+						workerAccount.getUserCategory().toString(), // category
+						meeting.getDescriptionMeeting(),
+						meeting.getDateMeeting(),
+						meeting.getSlotTime(),
+						meeting.getAcceptedMeeting(),
+						meeting.getStartedMeeting(),
+						meeting.getLatPosition(),
+						meeting.getLngPosition()));
+			}
 		}
 		return getMeetingsResponse;
 	}
@@ -205,6 +238,48 @@ public class AccountService {
 				newMeeting.getDescription(),
 				dateTime,
 				newMeeting.getSlot_time());
+
+		meetingRepository.save(meeting);
+	}
+
+	/**
+	 * Allows worker to approve a meeting
+	 * @param idMeeting: the id of the meeting
+	 */
+	public void approveMeeting(Long idMeeting, Boolean accepted) {
+		Account account = getCustomerOrWorkerInfo();
+		//Commented just for easy testing:
+		//if(account.getUserRole() != Role.Worker)
+		//	throw new IllegalArgumentException("Only workers can approve a meeting. You are a customer.");
+
+		Meeting meeting = meetingRepository.findByIdMeeting(idMeeting);
+		meeting.setAcceptedMeeting(accepted);
+
+
+		meetingRepository.save(meeting);
+	}
+
+	/**
+	 * Allows the worker to start sharing their position
+	 * @param idMeeting: the id of the meeting
+	 * @param started: false if sharing is finished
+	 */
+	public void sharePosition(Long idMeeting, Boolean started, Double latitude, Double longitude) {
+		Account account = getCustomerOrWorkerInfo();
+		//Commented just for easy testing:
+		//if(account.getUserRole() != Role.Worker)
+		//	throw new IllegalArgumentException("Only workers can approve a meeting. You are a customer.");
+
+		Meeting meeting = meetingRepository.findByIdMeeting(idMeeting);
+
+		System.out.println(latitude);
+
+		if(started != null)
+			meeting.setStartedMeeting(started);
+		if(latitude != null)
+			meeting.setLatPosition(latitude);
+		if(longitude != null)
+			meeting.setLngPosition(longitude);
 
 		meetingRepository.save(meeting);
 	}
