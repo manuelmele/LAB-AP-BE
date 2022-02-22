@@ -2,6 +2,8 @@ package core.wefix.lab.controller;
 
 import core.wefix.lab.configuration.error.ErrorResponse;
 import core.wefix.lab.service.AccountService;
+import core.wefix.lab.utils.object.request.InsertNewMeetingRequest;
+import core.wefix.lab.utils.object.request.InsertNewProductRequest;
 import core.wefix.lab.utils.object.request.UpdateProfileRequest;
 import core.wefix.lab.utils.object.response.*;
 import core.wefix.lab.utils.object.staticvalues.Category;
@@ -88,6 +90,28 @@ public class AccountApiController {
     })
     List<GetProductResponse> getWorkerProducts(@Param("emailWorker") String emailWorker) {
         return accountService.getWorkerProducts(emailWorker);
+    }
+
+    @GetMapping(path = "/worker-meetings", produces = "application/json")
+    @Operation(summary = "Allows the worker to get all meetings")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    List<GetMeetingResponse> getWorkerMeetings(@Param("emailWorker") String emailWorker) {
+        return accountService.getWorkerMeetings(emailWorker);
+    }
+
+    @PostMapping(path = "/add-meeting", produces = "application/json")
+    @Operation(summary = "Allows to create a new meeting")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    void insertNewMeeting(@RequestBody InsertNewMeetingRequest newMeeting) {
+        accountService.insertNewMeeting(newMeeting);
     }
 
     @PutMapping(path = "/complete/signup", produces = "application/json", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})

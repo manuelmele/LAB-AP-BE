@@ -1,16 +1,22 @@
 package core.wefix.lab.service;
 
 import core.wefix.lab.entity.Account;
+import core.wefix.lab.entity.Meeting;
+import core.wefix.lab.entity.Product;
 import core.wefix.lab.entity.Product;
 import core.wefix.lab.entity.Review;
 import core.wefix.lab.repository.AccountRepository;
+import core.wefix.lab.repository.MeetingRepository;
 import core.wefix.lab.repository.ProductRepository;
 import core.wefix.lab.repository.ReviewRepository;
 import core.wefix.lab.service.jwt.JWTAuthenticationService;
 import core.wefix.lab.service.jwt.JWTService;
 import core.wefix.lab.utils.object.Regex;
+import core.wefix.lab.utils.object.request.InsertNewMeetingRequest;
+import core.wefix.lab.utils.object.request.InsertNewProductRequest;
 import core.wefix.lab.utils.object.request.UpdateProfileRequest;
 import core.wefix.lab.utils.object.response.GetProductResponse;
+import core.wefix.lab.utils.object.response.GetMeetingResponse;
 import core.wefix.lab.utils.object.response.GetProfileResponse;
 import core.wefix.lab.utils.object.response.GetReviewsResponse;
 import core.wefix.lab.utils.object.response.JWTResponse;
@@ -29,8 +35,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static core.wefix.lab.utils.object.Regex.*;
 import static core.wefix.lab.utils.object.staticvalues.StaticObject.photoProfileBase;
@@ -43,6 +53,7 @@ import static core.wefix.lab.utils.object.staticvalues.StaticObject.photoProfile
 public class AccountService {
 	private final AccountRepository accountRepository;
 	private final ReviewRepository reviewRepository;
+	private final MeetingRepository meetingRepository;
 	private final ProductRepository productRepository;
 	private final JWTAuthenticationService authenticationService;
 
@@ -139,6 +150,63 @@ public class AccountService {
 				));
 		}
 		return getReviewsResponse;
+	}
+
+	public List<GetMeetingResponse> getWorkerMeetings(String emailWorker) {
+		getCustomerOrWorkerInfo();
+		// emailWorker validate
+		if (!emailWorker.matches(emailRegex))
+			throw new IllegalArgumentException("Invalid emailWorker");
+		Account workerAccount = accountRepository.findByEmailAndUserRole(emailWorker, Role.Worker);
+		//System.out.println("worker account = " + workerAccount.getAccountId() + " " + workerAccount.getUserCategory());
+		List<Meeting> meetingsRetrieved;
+		List<GetMeetingResponse> getMeetingsResponse = new ArrayList<>();
+		if (workerAccount != null) {
+			meetingsRetrieved = meetingRepository.findByUserIdWorker(workerAccount.getAccountId());
+			for (Meeting meeting : meetingsRetrieved){
+				Account customerAccount = accountRepository.findByAccountId(meeting.getUserIdCustomerMeeting());
+				getMeetingsResponse.add(new GetMeetingResponse(
+						customerAccount.getFirstName(),
+						customerAccount.getSecondName(),
+						customerAccount.getEmail(),
+						customerAccount.getPhotoProfile(),
+						null, // category
+						meeting.getDescriptionMeeting(),
+						meeting.getDateMeeting(),
+						meeting.getSlotTime(),
+						meeting.getAcceptedMeeting(),
+						meeting.getStartedMeeting(),
+						meeting.getLatPosition(),
+						meeting.getLngPosition()));
+		}
+		}
+		return getMeetingsResponse;
+	}
+
+	/**
+	 * Allows user to insert a new meeting
+	 * @param newMeeting: json data retrieved from body to complete request
+	 */
+	public void insertNewMeeting(InsertNewMeetingRequest newMeeting) {
+		getCustomerOrWorkerInfo();
+		// newMeeting validate
+		if (!InsertNewMeetingRequest.validateInsertNewMeetingRequestJsonFields(newMeeting)) {
+			throw new IllegalArgumentException("Invalid json body");}
+		Account workerAccount = accountRepository.findByEmailAndUserRole(newMeeting.getEmailWorker(), Role.Worker);
+		Account customerAccount = accountRepository.findByEmailAndUserRole(newMeeting.getEmailCustomer(), Role.Customer);
+
+		String dateString = newMeeting.getDate();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		LocalDateTime dateTime = LocalDate.parse(dateString, formatter).atStartOfDay();
+
+		Meeting meeting = new Meeting(
+				workerAccount.getAccountId(),
+				customerAccount.getAccountId(),
+				newMeeting.getDescription(),
+				dateTime,
+				newMeeting.getSlot_time());
+
+		meetingRepository.save(meeting);
 	}
 
 	/**
