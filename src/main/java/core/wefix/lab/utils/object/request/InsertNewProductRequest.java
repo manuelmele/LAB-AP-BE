@@ -18,19 +18,25 @@ public class InsertNewProductRequest {
 
 	public static boolean validateInsertNewProductRequestJsonFields(InsertNewProductRequest insertNewProductRequest) {
 
-		if (!insertNewProductRequest.getDescription().matches(descriptionRegex) || insertNewProductRequest.getDescription() == null) {
-			System.out.println("Json field \"description\" : " + insertNewProductRequest.getDescription() + " is invalid");
-			return false;
+		if (insertNewProductRequest.getDescription() != null) {
+			if (!insertNewProductRequest.getDescription().matches(descriptionRegex)) {
+				System.out.println("Json field \"description\" : " + insertNewProductRequest.getDescription() + " is invalid");
+				return false;
+			}
 		}
 
-		if (!insertNewProductRequest.getTitle().matches(titleRegex) || insertNewProductRequest.getTitle() == null) {
-			System.out.println("Json field \"title\" : " + insertNewProductRequest.getTitle() + " is invalid");
-			return false;
+		if (insertNewProductRequest.getTitle() != null) {
+			if (!insertNewProductRequest.getTitle().matches(titleRegex)) {
+				System.out.println("Json field \"title\" : " + insertNewProductRequest.getTitle() + " is invalid");
+				return false;
+			}
 		}
 
-		if (!insertNewProductRequest.getPrice().toString().matches(priceRegex) || insertNewProductRequest.getPrice() == null) {
-			System.out.println("Json field \"price\" : " + insertNewProductRequest.getPrice() + " is invalid");
-			return false;
+		if (insertNewProductRequest.getPrice() != null) {
+			if (!insertNewProductRequest.getPrice().toString().matches(priceRegex)) {
+				System.out.println("Json field \"price\" : " + insertNewProductRequest.getPrice() + " is invalid");
+				return false;
+			}
 		}
 
 		return  true;

@@ -2,11 +2,14 @@ package core.wefix.lab.service;
 
 import core.wefix.lab.entity.Account;
 import core.wefix.lab.entity.Product;
+import core.wefix.lab.entity.Review;
 import core.wefix.lab.repository.AccountRepository;
 import core.wefix.lab.repository.ProductRepository;
+import core.wefix.lab.repository.ReviewRepository;
 import core.wefix.lab.service.jwt.JWTService;
 import core.wefix.lab.utils.object.request.InsertNewProductRequest;
 import core.wefix.lab.utils.object.response.GetProductResponse;
+import core.wefix.lab.utils.object.response.GetReviewsResponse;
 import core.wefix.lab.utils.object.staticvalues.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +24,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static core.wefix.lab.utils.object.Regex.emailRegex;
+import static core.wefix.lab.utils.object.staticvalues.StaticObject.photoProfileBase;
 
 @Slf4j
 @Service
@@ -30,6 +37,8 @@ import java.util.List;
 public class WorkerService {
     private final AccountRepository accountRepository;
     private final ProductRepository productRepository;
+    private final ReviewRepository reviewRepository;
+
 
     /**
      * Allows retrieving of all worker data from his authentication
@@ -53,22 +62,31 @@ public class WorkerService {
      * @param imageGallery: the image that worker wants to be set for a product
      * @param newProduct: json data retrieved from body to complete request
      */
-    public void insertNewProduct(MultipartFile imageGallery, InsertNewProductRequest newProduct) {
+    public void insertNewProduct(MultipartFile imageGallery, InsertNewProductRequest newProduct) throws IOException {
         Account account = getWorkerInfo();
+        Product product;
         // newProduct validate
         if (!InsertNewProductRequest.validateInsertNewProductRequestJsonFields(newProduct))
             throw new IllegalArgumentException("Invalid json body");
-        try {
-            Product product = new Product(
+        if (imageGallery == null){
+            product = new Product(
                     account.getAccountId(),
-                    imageGallery.getBytes(),
+                    photoProfileBase,
                     newProduct.getPrice(),
                     newProduct.getDescription(),
                     newProduct.getTitle());
-            productRepository.save(product);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Invalid photoProfile");
+        }else {
+            try {
+                product = new Product(
+                            account.getAccountId(),
+                            imageGallery.getBytes(),
+                            newProduct.getPrice(),
+                            newProduct.getDescription(),
+                            newProduct.getTitle());
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Invalid image");}
         }
+        productRepository.save(product);
     }
 
     /**
@@ -81,6 +99,7 @@ public class WorkerService {
         List<GetProductResponse> getProductResponse = new ArrayList<>();
         for (Product product : productsRetrieved) {
             getProductResponse.add(new GetProductResponse(
+                    product.getProductId(),
                     product.getProductImage(),
                     product.getPrice(),
                     product.getDescription(),
@@ -101,15 +120,21 @@ public class WorkerService {
         if (!InsertNewProductRequest.validateInsertNewProductRequestJsonFields(updateProduct))
             throw new IllegalArgumentException("Invalid json body");
         Product productRetrieved = productRepository.findByProductId(productId);
+        if(productRetrieved == null)
+            throw new IllegalArgumentException("Invalid productId");
         if(!productRetrieved.getUserId().equals(account.getAccountId()))
             throw new JWTService.TokenVerificationException("Worker not authorized to update current productId");
         try {
-            productRetrieved.setProductImage(imageGallery.getBytes());
+            if(imageGallery!=null)
+                productRetrieved.setProductImage(imageGallery.getBytes());
         } catch (IOException e) {
             throw new IllegalArgumentException("Invalid image");}
-        productRetrieved.setDescription(updateProduct.getDescription());
-        productRetrieved.setPrice(updateProduct.getPrice());
-        productRetrieved.setTitle(updateProduct.getTitle());
+        if(updateProduct.getDescription() != null)
+            productRetrieved.setDescription(updateProduct.getDescription());
+        if(updateProduct.getPrice() != null)
+            productRetrieved.setPrice(updateProduct.getPrice());
+        if(updateProduct.getTitle() != null)
+            productRetrieved.setTitle(updateProduct.getTitle());
         productRepository.save(productRetrieved);
     }
 
@@ -120,10 +145,14 @@ public class WorkerService {
     public void deleteProduct(Long productId) {
         Account account = getWorkerInfo();
         Product productRetrieved = productRepository.findByProductId(productId);
+        if(productRetrieved == null)
+            throw new IllegalArgumentException("Invalid productId");
         if(!productRetrieved.getUserId().equals(account.getAccountId()))
             throw new JWTService.TokenVerificationException("Worker not authorized to delete current productId");
         productRetrieved.setDeletedProduct(Boolean.TRUE);
         productRepository.save(productRetrieved);
     }
+
+
 
 }

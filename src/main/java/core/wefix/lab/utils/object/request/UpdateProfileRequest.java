@@ -19,19 +19,25 @@ public class UpdateProfileRequest {
 
 	public static boolean validateUpdateProfileRequestJsonFields(UpdateProfileRequest updateProfileRequest) {
 
-		if (!updateProfileRequest.getFirstName().matches(firstNameRegex) || updateProfileRequest.getFirstName() == null) {
-			System.out.println("Json field \"firstName\" : " + updateProfileRequest.getFirstName() + " is invalid");
-			return false;
+		if(updateProfileRequest.getFirstName() != null) {
+			if (!updateProfileRequest.getFirstName().matches(firstNameRegex)) {
+				System.out.println("Json field \"firstName\" : " + updateProfileRequest.getFirstName() + " is invalid");
+				return false;
+			}
 		}
 
-		if (!updateProfileRequest.getSecondName().matches(secondNameRegex) || updateProfileRequest.getSecondName() == null) {
-			System.out.println("Json field \"secondName\" : " + updateProfileRequest.getSecondName() + " is invalid");
-			return false;
+		if(updateProfileRequest.getSecondName() != null) {
+			if (!updateProfileRequest.getSecondName().matches(secondNameRegex)) {
+				System.out.println("Json field \"secondName\" : " + updateProfileRequest.getSecondName() + " is invalid");
+				return false;
+			}
 		}
 
-		if (!updateProfileRequest.getBio().matches(bioRegex) || updateProfileRequest.getBio() == null) {
-			System.out.println("Json field \"bio\" : " + updateProfileRequest.getBio() + " is invalid");
-			return false;
+		if(updateProfileRequest.getBio() != null) {
+			if (!updateProfileRequest.getBio().matches(bioRegex)) {
+				System.out.println("Json field \"bio\" : " + updateProfileRequest.getBio() + " is invalid");
+				return false;
+			}
 		}
 
 		return  true;

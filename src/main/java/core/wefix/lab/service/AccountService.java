@@ -1,19 +1,21 @@
 package core.wefix.lab.service;
 
 import core.wefix.lab.entity.Account;
+import core.wefix.lab.entity.Product;
 import core.wefix.lab.entity.Review;
 import core.wefix.lab.repository.AccountRepository;
+import core.wefix.lab.repository.ProductRepository;
 import core.wefix.lab.repository.ReviewRepository;
 import core.wefix.lab.service.jwt.JWTAuthenticationService;
 import core.wefix.lab.service.jwt.JWTService;
 import core.wefix.lab.utils.object.Regex;
 import core.wefix.lab.utils.object.request.UpdateProfileRequest;
+import core.wefix.lab.utils.object.response.GetProductResponse;
 import core.wefix.lab.utils.object.response.GetProfileResponse;
 import core.wefix.lab.utils.object.response.GetReviewsResponse;
 import core.wefix.lab.utils.object.response.JWTResponse;
 import core.wefix.lab.utils.object.staticvalues.Category;
 import core.wefix.lab.utils.object.staticvalues.Role;
-import core.wefix.lab.utils.object.staticvalues.StaticObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -28,7 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static core.wefix.lab.utils.object.Regex.*;
@@ -42,6 +43,7 @@ import static core.wefix.lab.utils.object.staticvalues.StaticObject.photoProfile
 public class AccountService {
 	private final AccountRepository accountRepository;
 	private final ReviewRepository reviewRepository;
+	private final ProductRepository productRepository;
 	private final JWTAuthenticationService authenticationService;
 
 	/**
@@ -103,7 +105,6 @@ public class AccountService {
 		if (!emailWorker.matches(emailRegex))
 			throw new IllegalArgumentException("Invalid emailWorker");
 		Account workerAccount = accountRepository.findByEmailAndUserRole(emailWorker, Role.Worker);
-		//System.out.println("worker account = " + workerAccount.getAccountId() + " " + workerAccount.getUserCategory());
 		List<Review> reviewsRetrieved;
 		List<GetReviewsResponse> getReviewsResponse = new ArrayList<>();
 		if (workerAccount != null) {
@@ -114,6 +115,27 @@ public class AccountService {
 						review.getStar(),
 						workerAccount.getFirstName(),
 						workerAccount.getSecondName()
+				));
+		}
+		return getReviewsResponse;
+	}
+
+	public List<GetReviewsResponse> getCustomerReviews(String emailCustomer) {
+		getCustomerOrWorkerInfo();
+		// emailWorker validate
+		if (!emailCustomer.matches(emailRegex))
+			throw new IllegalArgumentException("Invalid emailWorker");
+		Account account = accountRepository.findByEmailAndUserRole(emailCustomer, Role.Customer);
+		List<Review> reviewsRetrieved;
+		List<GetReviewsResponse> getReviewsResponse = new ArrayList<>();
+		if (account != null) {
+			reviewsRetrieved = reviewRepository.findByUserIdReceiveReview(account.getAccountId());
+			for (Review review : reviewsRetrieved)
+				getReviewsResponse.add(new GetReviewsResponse(
+						review.getContent(),
+						review.getStar(),
+						account.getFirstName(),
+						account.getSecondName()
 				));
 		}
 		return getReviewsResponse;
@@ -189,10 +211,14 @@ public class AccountService {
 		// Validate json body
 		if (!UpdateProfileRequest.validateUpdateProfileRequestJsonFields(updateProfileRequest))
 			throw new IllegalArgumentException("Invalid json body");
-		account.setFirstName(updateProfileRequest.getFirstName());
-		account.setSecondName(updateProfileRequest.getSecondName());
-		account.setPhotoProfile(updateProfileRequest.getPhotoProfile());
-		account.setBio(updateProfileRequest.getBio());
+		if (updateProfileRequest.getFirstName() != null)
+			account.setFirstName(updateProfileRequest.getFirstName());
+		if (updateProfileRequest.getSecondName() != null)
+			account.setSecondName(updateProfileRequest.getSecondName());
+		if (updateProfileRequest.getPhotoProfile() != null)
+			account.setPhotoProfile(updateProfileRequest.getPhotoProfile());
+		if (updateProfileRequest.getBio() != null)
+			account.setBio(updateProfileRequest.getBio());
 		accountRepository.save(account);
 	}
 
@@ -230,4 +256,42 @@ public class AccountService {
 		return getProfileResponse;
 	}
 
+	public List<GetProductResponse> getWorkerProducts(String emailWorker) {
+		getCustomerOrWorkerInfo();
+		// emailWorker validate
+		if (!emailWorker.matches(emailRegex))
+			throw new IllegalArgumentException("Invalid emailWorker");
+		Account workerAccount = accountRepository.findByEmailAndUserRole(emailWorker, Role.Worker);
+		List<Product> productsRetrieved;
+		List<GetProductResponse> getProductResponse = new ArrayList<>();
+		if (workerAccount != null) {
+			productsRetrieved = productRepository.findByUserIdAndDeletedProductFalse(workerAccount.getAccountId());
+			for (Product product : productsRetrieved) {
+				getProductResponse.add(new GetProductResponse(
+						product.getProductId(),
+						product.getProductImage(),
+						product.getPrice(),
+						product.getDescription(),
+						product.getTitle()));
+			}
+		}
+		return getProductResponse;
+	}
+
+	public List<GetReviewsResponse> getReviews() {
+		Account workerAccount = accountRepository.findByEmailAndUserRole(getCustomerOrWorkerInfo().getEmail(), Role.Worker);
+		List<Review> reviewsRetrieved;
+		List<GetReviewsResponse> getReviewsResponse = new ArrayList<>();
+		if (workerAccount != null) {
+			reviewsRetrieved = reviewRepository.findByUserIdReceiveReview(workerAccount.getAccountId());
+			for (Review review : reviewsRetrieved)
+				getReviewsResponse.add(new GetReviewsResponse(
+						review.getContent(),
+						review.getStar(),
+						workerAccount.getFirstName(),
+						workerAccount.getSecondName()
+				));
+		}
+		return getReviewsResponse;
+	}
 }

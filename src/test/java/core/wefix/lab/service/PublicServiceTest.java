@@ -4,6 +4,7 @@ import core.wefix.lab.entity.Account;
 import core.wefix.lab.repository.AccountRepository;
 import core.wefix.lab.utils.object.request.RegisterRequest;
 import core.wefix.lab.utils.object.response.JWTResponse;
+import core.wefix.lab.utils.object.staticvalues.Category;
 import core.wefix.lab.utils.object.staticvalues.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -51,12 +52,14 @@ public class PublicServiceTest {
                 "CustomerSurname",
                 customerMail,
                 DigestUtils.sha3_256Hex(defaultPassword),
-                Role.Customer));
+                Role.Customer,
+                Category.Customer));
         accountRepository.save(new Account("WorkerName",
                 "WorkerSurname",
                 workerMail,
                 DigestUtils.sha3_256Hex(defaultPassword),
-                Role.Worker));
+                Role.Worker,
+                Category.Customer));
     }
 
     @Test

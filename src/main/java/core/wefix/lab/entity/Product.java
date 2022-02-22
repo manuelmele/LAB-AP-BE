@@ -49,6 +49,7 @@ public class Product implements Serializable {
 		this.price = price;
 		this.description = description;
 		this.title = title;
+		deletedProduct = false;
 	}
 
 	@Basic
@@ -59,5 +60,5 @@ public class Product implements Serializable {
 	@OnDelete(action = CASCADE)
 	@ManyToOne(cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
-	private Account userIdProduct;
+	private Product userIdProduct;
 }

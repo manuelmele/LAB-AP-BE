@@ -8,5 +8,6 @@ public enum Category {
 	Gardener,			// Giardiniere
 	Carpenter, 		// Falegname
 	ChimneySweep, // Spazzacamini
-	Blacksmith   	// Fabbro
+	Blacksmith,  	// Fabbro
+	Customer
 }

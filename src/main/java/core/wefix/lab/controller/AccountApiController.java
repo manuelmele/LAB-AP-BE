@@ -3,10 +3,7 @@ package core.wefix.lab.controller;
 import core.wefix.lab.configuration.error.ErrorResponse;
 import core.wefix.lab.service.AccountService;
 import core.wefix.lab.utils.object.request.UpdateProfileRequest;
-import core.wefix.lab.utils.object.response.GetProfileResponse;
-import core.wefix.lab.utils.object.response.GetReviewsResponse;
-import core.wefix.lab.utils.object.response.GetWorkersCategoriesResponse;
-import core.wefix.lab.utils.object.response.JWTResponse;
+import core.wefix.lab.utils.object.response.*;
 import core.wefix.lab.utils.object.staticvalues.Category;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -69,6 +66,28 @@ public class AccountApiController {
     })
     List<GetReviewsResponse> getWorkerReviews(@Param("emailWorker") String emailWorker) {
         return accountService.getWorkerReviews(emailWorker);
+    }
+
+    @GetMapping(path = "/user-reviews", produces = "application/json")
+    @Operation(summary = "Allows user/worker to get all user reviews")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    List<GetReviewsResponse> getCustomerReviews(@Param("emailCustomer") String emailCustomer) {
+        return accountService.getCustomerReviews(emailCustomer);
+    }
+
+    @GetMapping(path = "/worker-products", produces = "application/json")
+    @Operation(summary = "Allows consumer to get all worker products")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    List<GetProductResponse> getWorkerProducts(@Param("emailWorker") String emailWorker) {
+        return accountService.getWorkerProducts(emailWorker);
     }
 
     @PutMapping(path = "/complete/signup", produces = "application/json", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -135,6 +154,17 @@ public class AccountApiController {
     })
     List<GetProfileResponse> getWorkersByName(@RequestParam(required = false, value = "value") String value, @RequestParam("category") String category) {
         return accountService.getWorkersByFirstNameOrSecondNameOrEmailOrBio(value, category);
+    }
+
+    @GetMapping(path = "/reviews", produces = "application/json")
+    @Operation(summary = "Allows to get all his reviews")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    List<GetReviewsResponse> getReviews() {
+        return accountService.getReviews();
     }
 
 }

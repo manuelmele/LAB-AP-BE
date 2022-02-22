@@ -10,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetProductResponse {
+	private Long productId;
 	private byte[] image;
 	private Double price;
 	private String description;

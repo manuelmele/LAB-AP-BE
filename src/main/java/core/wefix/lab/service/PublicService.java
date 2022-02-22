@@ -6,6 +6,7 @@ import core.wefix.lab.service.jwt.JWTAuthenticationService;
 import core.wefix.lab.service.jwt.JWTService;
 import core.wefix.lab.utils.object.request.RegisterRequest;
 import core.wefix.lab.utils.object.response.JWTResponse;
+import core.wefix.lab.utils.object.staticvalues.Category;
 import core.wefix.lab.utils.object.staticvalues.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,8 @@ public class PublicService {
 						registerRequest.getSecondName(),
 						registerRequest.getEmail(),
 						shaPassword,
-						role));
+						role,
+						Category.Customer));
 		return new JWTResponse(authenticationService.login(role, registerRequest.getEmail(), shaPassword));
 	}
 

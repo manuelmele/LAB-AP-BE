@@ -6,6 +6,7 @@ import core.wefix.lab.utils.object.staticvalues.Category;
 import core.wefix.lab.utils.object.staticvalues.Role;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.*;
+import reactor.util.annotation.Nullable;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -76,14 +77,15 @@ public class Account implements Serializable {
 	@Basic
 	@Column(name = "category", length = 32)
 	@Enumerated(EnumType.STRING)
-	private Category userCategory;
+	private Category userCategory = null;
 
-	public Account(String firstName, String secondName, String email, String userPassword, Role userRole) {
+	public Account(String firstName, String secondName, String email, String userPassword, Role userRole, Category userCategory) {
 		this.firstName = firstName;
 		this.secondName = secondName;
 		this.email = email;
 		this.userPassword = userPassword;
 		this.userRole = userRole;
+		this.userCategory = userCategory;
 	}
 
 	public Account(String firstName, String secondName, String email, String userPassword, Role userRole, String bio, byte[] photoProfile, LocalDateTime dateReset, String resetCode, String pIva, String identityCardNumber) {

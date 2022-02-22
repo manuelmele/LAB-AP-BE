@@ -4,6 +4,7 @@ import core.wefix.lab.configuration.error.ErrorResponse;
 import core.wefix.lab.service.WorkerService;
 import core.wefix.lab.utils.object.request.InsertNewProductRequest;
 import core.wefix.lab.utils.object.response.GetProductResponse;
+import core.wefix.lab.utils.object.response.GetReviewsResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @CrossOrigin
@@ -37,7 +39,7 @@ public class WorkerApiController {
             @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    void insertNewProduct(@RequestParam("image") MultipartFile imageGallery, InsertNewProductRequest newProduct) {
+    void insertNewProduct(@RequestParam(required = false, value = "image") MultipartFile imageGallery, InsertNewProductRequest newProduct) throws IOException {
         workerService.insertNewProduct(imageGallery, newProduct);
     }
 
@@ -59,7 +61,7 @@ public class WorkerApiController {
             @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    void updateProduct(@PathVariable("productId") Long productId, @RequestParam("image") MultipartFile imageGallery, InsertNewProductRequest updateProduct) {
+    void updateProduct(@PathVariable("productId") Long productId, @RequestParam(required = false, value ="image") MultipartFile imageGallery, InsertNewProductRequest updateProduct) {
         workerService.updateProduct(imageGallery, updateProduct, productId);
     }
 
@@ -73,4 +75,7 @@ public class WorkerApiController {
     void deleteProduct(@PathVariable("productId") Long productId) {
         workerService.deleteProduct(productId);
     }
+
+
+
 }
