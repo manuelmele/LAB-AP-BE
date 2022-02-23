@@ -38,9 +38,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final TokenAuthenticationProvider authenticationProvider;
     private static final RequestMatcher PROTECTED_URLS = new OrRequestMatcher(
         new AntPathRequestMatcher("/wefix/account/**"),
-        new AntPathRequestMatcher("/wefix/worker/**"),
-        new AntPathRequestMatcher("/payment-ticket/**"),
-        new AntPathRequestMatcher("/payment-fine/**")
+        new AntPathRequestMatcher("/wefix/worker/**")
     );
 
     @Override
@@ -61,7 +59,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(restAuthenticationFilter(), AnonymousAuthenticationFilter.class)
             .authorizeRequests()
-            .antMatchers("/wefix/account/**", "/wefix/worker/**", "/payment-ticket/**", "/payment-fine/**")
+            .antMatchers("/wefix/account/**", "/wefix/worker/**")
             .authenticated()
             .and()
             .csrf().disable()

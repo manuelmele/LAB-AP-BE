@@ -1,8 +1,10 @@
 package core.wefix.lab.service;
 
+import com.paypal.api.payments.Links;
+import com.paypal.api.payments.Payment;
+import com.paypal.base.rest.PayPalRESTException;
 import core.wefix.lab.entity.Account;
 import core.wefix.lab.entity.Product;
-import core.wefix.lab.entity.Review;
 import core.wefix.lab.repository.AccountRepository;
 import core.wefix.lab.repository.ProductRepository;
 import core.wefix.lab.repository.ReviewRepository;
@@ -10,11 +12,12 @@ import core.wefix.lab.service.jwt.JWTService;
 import core.wefix.lab.utils.object.request.InsertNewProductRequest;
 import core.wefix.lab.utils.object.response.AvgReviewsResponse;
 import core.wefix.lab.utils.object.response.GetProductResponse;
-import core.wefix.lab.utils.object.response.GetReviewsResponse;
+import core.wefix.lab.utils.object.staticvalues.CurrencyPayPal;
 import core.wefix.lab.utils.object.staticvalues.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static core.wefix.lab.utils.object.Regex.emailRegex;
@@ -36,6 +38,9 @@ import static core.wefix.lab.utils.object.staticvalues.StaticObject.photoProfile
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class WorkerService {
+    @Value("${server.port}")
+    private String port;
+    private final PayPalService payPalService;
     private final AccountRepository accountRepository;
     private final ProductRepository productRepository;
     private final ReviewRepository reviewRepository;
@@ -63,7 +68,7 @@ public class WorkerService {
      * @param imageGallery: the image that worker wants to be set for a product
      * @param newProduct: json data retrieved from body to complete request
      */
-    public void insertNewProduct(MultipartFile imageGallery, InsertNewProductRequest newProduct) throws IOException {
+    public void insertNewProduct(MultipartFile imageGallery, InsertNewProductRequest newProduct) {
         Account account = getWorkerInfo();
         Product product;
         // newProduct validate
@@ -165,8 +170,39 @@ public class WorkerService {
             avgStar = reviewRepository.avgStar(account.getAccountId());
         else
             throw new IllegalArgumentException("Invalid emailCustomer");
-
         return new AvgReviewsResponse(avgStar);
+    }
+
+
+    public String pay(Double price, CurrencyPayPal currency) {
+       getWorkerInfo();
+        try {
+            Payment payment = payPalService.createPayment(price, currency, "paypal",
+                    "sale", "We Fix payment", "http://localhost:" + port + "/wefix/worker" + "/payment-failed",
+                    "http://localhost:" + port + "/wefix/worker" + "/payment-success");
+            for (Links link : payment.getLinks()) {
+                if (link.getRel().equals("approval_url")) {
+                    return "redirect:" + link.getHref();
+                }
+            }
+        } catch (PayPalRESTException e) {
+            e.printStackTrace();
+        }
+        return "redirect:/";
+    }
+
+    public String paymentSuccess(String paymentId, String payerId) {
+        Account account = getWorkerInfo();
+        try {
+            Payment payment = payPalService.executePayment(paymentId, payerId);
+            if (payment.getState().equals("approved")) {
+                payPalService.completePayment(account.getAccountId(),paymentId);
+                return "PayPal payment of the fine success";
+            }
+        } catch (PayPalRESTException e) {
+            System.out.println(e.getMessage());
+        }
+        return "redirect:/";
     }
 
 }

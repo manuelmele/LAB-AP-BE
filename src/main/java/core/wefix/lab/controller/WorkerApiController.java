@@ -5,7 +5,7 @@ import core.wefix.lab.service.WorkerService;
 import core.wefix.lab.utils.object.request.InsertNewProductRequest;
 import core.wefix.lab.utils.object.response.AvgReviewsResponse;
 import core.wefix.lab.utils.object.response.GetProductResponse;
-import core.wefix.lab.utils.object.response.GetReviewsResponse;
+import core.wefix.lab.utils.object.staticvalues.CurrencyPayPal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -89,4 +89,34 @@ public class WorkerApiController {
         return workerService.getCustomerAvgReviews(emailCustomer);
     }
 
+    @PostMapping(path="/payment", produces = "application/json")
+    @Operation(summary = "Allows worker to pay plan price")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    })
+    String payFine(@RequestParam("price") Double price, @RequestParam("currency") CurrencyPayPal currency){
+        return workerService.pay(price, currency);
+    }
+
+    @GetMapping(path="/payment-failed", value = "/payment-failed", produces = "application/text")
+    @Operation(summary = "PayPal payment failed")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    })
+    public String cancelFinePayment() { return "PayPal payment failed";}
+
+    @GetMapping(path= "/payment-success", value = "/payment-success", produces = "application/text")
+    @Operation(summary = "PayPal payment success")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    })
+    String successFinePayment(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) {
+        return workerService.paymentSuccess(paymentId, payerId);
+    }
 }
