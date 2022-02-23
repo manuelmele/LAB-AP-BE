@@ -42,7 +42,7 @@ public class Meeting implements Serializable {
 	private LocalDateTime dateMeeting;
 
 	@Basic
-	@Column(name = "slot_time", length = 8)
+	@Column(name = "slot_time", length = 32)
 	private String slotTime;
 
 	@Basic
