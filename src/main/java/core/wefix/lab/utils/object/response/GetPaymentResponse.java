@@ -19,6 +19,8 @@ public class GetPaymentResponse {
     private Long paymentId;
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime date;
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private LocalDateTime deadline;
     private Double price;
     private CurrencyPayPal currency;
     private String paymentMethod;

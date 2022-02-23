@@ -1,25 +1,28 @@
 package core.wefix.lab.service;
 
+import com.paypal.api.payments.Links;
+import com.paypal.api.payments.Payment;
+import com.paypal.base.rest.PayPalRESTException;
 import core.wefix.lab.entity.Account;
 import core.wefix.lab.entity.Meeting;
 import core.wefix.lab.entity.Product;
 import core.wefix.lab.entity.Review;
-import core.wefix.lab.repository.AccountRepository;
-import core.wefix.lab.repository.MeetingRepository;
-import core.wefix.lab.repository.ProductRepository;
-import core.wefix.lab.repository.ReviewRepository;
+import core.wefix.lab.repository.*;
 import core.wefix.lab.service.jwt.JWTAuthenticationService;
 import core.wefix.lab.service.jwt.JWTService;
 import core.wefix.lab.utils.object.Regex;
 import core.wefix.lab.utils.object.request.InsertNewMeetingRequest;
+import core.wefix.lab.utils.object.request.UpdateProRequest;
 import core.wefix.lab.utils.object.request.UpdateProfileRequest;
 import core.wefix.lab.utils.object.response.*;
 import core.wefix.lab.utils.object.staticvalues.Category;
+import core.wefix.lab.utils.object.staticvalues.CurrencyPayPal;
 import core.wefix.lab.utils.object.staticvalues.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,11 +47,17 @@ import static core.wefix.lab.utils.object.staticvalues.StaticObject.photoProfile
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class AccountService {
+	@Value("${server.port}")
+	private String port;
+	private UpdateProRequest updateProRequest;
+	private final PayPalService payPalService;
 	private final AccountRepository accountRepository;
 	private final ReviewRepository reviewRepository;
 	private final MeetingRepository meetingRepository;
 	private final ProductRepository productRepository;
 	private final JWTAuthenticationService authenticationService;
+	private final PaymentInfoRepository paymentInfoRepository;
+
 
 	/**
 	 * Allows retrieving of all user data from his authentication
@@ -380,5 +389,46 @@ public class AccountService {
 				));
 		}
 		return getReviewsResponse;
+	}
+
+	public String pay(Double price, CurrencyPayPal currency) {
+		try {
+			Payment payment = payPalService.createPayment(price, currency, "paypal",
+					"sale", "We Fix payment", "http://localhost:" + port + "/wefix/account" + "/payment-failed",
+					"http://localhost:" + port + "/wefix/account" + "/payment-success");
+			for (Links link : payment.getLinks()) {
+				if (link.getRel().equals("approval_url")) {
+					return "redirect:" + link.getHref();
+				}
+			}
+		} catch (PayPalRESTException e) {
+			e.printStackTrace();
+		}
+		return "redirect:/";
+	}
+
+	public String paymentSuccess(String paymentId, String payerId) {
+		Account account = getCustomerOrWorkerInfo();
+		try {
+			Payment payment = payPalService.executePayment(paymentId, payerId);
+			if (payment.getState().equals("approved")) {
+				payPalService.completePayment(account.getAccountId(),paymentId);
+				account.setPIva(updateProRequest.getPIva());
+				account.setUserCategory(updateProRequest.getCategory());
+				account.setUserRole(Role.Worker);
+				account.setIdentityCardNumber(updateProRequest.getIdentityCard());
+				accountRepository.save(account);
+				return authenticationService.login(account.getUserRole(), account.getEmail(), account.getUserPassword());
+			}
+		} catch (PayPalRESTException e) {
+			System.out.println(e.getMessage());
+		}
+		return "redirect:/";
+	}
+
+	public String updatePro(UpdateProRequest updateProRequest) {
+		Account account = getCustomerOrWorkerInfo();
+		this.updateProRequest = updateProRequest;
+		return pay(updateProRequest.getPrice(), updateProRequest.getCurrency());
 	}
 }

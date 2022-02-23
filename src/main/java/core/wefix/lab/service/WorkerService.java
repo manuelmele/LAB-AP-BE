@@ -218,6 +218,7 @@ public class WorkerService {
             getReviewResponse.add(new GetPaymentResponse(
                     paymentInfo.getPaymentId(),
                     paymentInfo.getPaymentDate(),
+                    paymentInfo.getDeadline(),
                     paymentInfo.getPrice(),
                     paymentInfo.getCurrency(),
                     paymentInfo.getPaypalPayerId()));
@@ -234,6 +235,7 @@ public class WorkerService {
             return new GetPaymentResponse(
                     paymentInfo.getPaymentId(),
                     paymentInfo.getPaymentDate(),
+                    paymentInfo.getDeadline(),
                     paymentInfo.getPrice(),
                     paymentInfo.getCurrency(),
                     paymentInfo.getPaypalPayerId());

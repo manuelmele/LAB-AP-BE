@@ -4,9 +4,11 @@ import core.wefix.lab.configuration.error.ErrorResponse;
 import core.wefix.lab.service.AccountService;
 import core.wefix.lab.utils.object.request.InsertNewMeetingRequest;
 import core.wefix.lab.utils.object.request.InsertNewProductRequest;
+import core.wefix.lab.utils.object.request.UpdateProRequest;
 import core.wefix.lab.utils.object.request.UpdateProfileRequest;
 import core.wefix.lab.utils.object.response.*;
 import core.wefix.lab.utils.object.staticvalues.Category;
+import core.wefix.lab.utils.object.staticvalues.CurrencyPayPal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -212,5 +214,48 @@ public class AccountApiController {
     List<GetReviewsResponse> getReviews() {
         return accountService.getReviews();
     }
+
+    @GetMapping(path = "/currencies", produces = "application/json")
+    @Operation(summary = "Allows to get all paypal currencies")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    GetPayPalCurrencyResponse getPayPalCurrencies() {
+        return new GetPayPalCurrencyResponse(List.of(CurrencyPayPal.values()));
+    }
+
+    @GetMapping(path="/payment-failed", value = "/payment-failed", produces = "application/text")
+    @Operation(summary = "PayPal payment failed")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    })
+    public String cancelFinePayment() { return "PayPal payment failed";}
+
+    @GetMapping(path= "/payment-success", value = "/payment-success", produces = "application/text")
+    @Operation(summary = "PayPal payment success")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    })
+    String successFinePayment(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) {
+        return accountService.paymentSuccess(paymentId, payerId);
+    }
+
+    @PostMapping(path = "/upgrade-pro", produces = "application/json")
+    @Operation(summary = "Allows user to update his profile from customer to worker")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    String updateProfile(@RequestBody UpdateProRequest updateProRequest) {
+        return accountService.updatePro(updateProRequest);
+    }
+
 
 }

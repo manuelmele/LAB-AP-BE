@@ -20,13 +20,15 @@ public class Regex {
 	public static final String passwordRegex = "^(?=.*?[0-9])(?=.*?[a-z])(?=.*?[A-Z])(.{8,30})$";
 	public static final String bioRegex = "^^[A-Za-z\\d@!\\\"#$%&\\'()*+,-.\\/:;<=>?@^_`\\{|\\}~\\sÀ-ÿ\\[\\]]{0,128}$";
 	public static final String categoryRegex = "^(Plumber|Painter|Electrician|Glazier|Gardener|Carpenter|ChimneySweep|Blacksmith)$";
-
+	public static final String currencyRegex = "^(EUR|USD|AUD|BRL|CAD|CNY|CZK|DKK|HKD|HUF|ILS|JPY|MYR|MXN|TWD|NZD|NOK|PHP|PLN|GBP|RUB|SGD|SEK|CHF|THB)$";
 	public static final String roleRegex = "^(User|Admin)$";
 	public static final String firstNameRegex = "^^[a-zA-Z-]{0,20}$";
 	public static final String secondNameRegex = "^^[a-zA-Z-]{0,20}$";
 	public static final String newPassword = "newPassword";
 	public static final String descriptionRegex = "^^[A-Za-z\\d@!\\\"#$%&\\'()*+,-.\\/:;<=>?@^_`\\{|\\}~\\sÀ-ÿ\\[\\]]{0,256}$";
 	public static final String titleRegex = "^^[A-Za-z\\d@!\\\"#$%&\\'()*+,-.\\/:;<=>?@^_`\\{|\\}~\\sÀ-ÿ\\[\\]]{0,64}$";
+	public static final String identityCardRegex = "^[A-Z]{2}+[0-9]{5}+[A-Z-0-9]{2}";
+
 
 	public static final String dateRegex = "^([0-2][0-9]||3[0-1])/(0[0-9]||1[0-2])/([0-9][0-9])?[0-9][0-9]$";
 
