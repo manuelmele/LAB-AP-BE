@@ -4,6 +4,7 @@ import core.wefix.lab.configuration.error.ErrorResponse;
 import core.wefix.lab.service.WorkerService;
 import core.wefix.lab.utils.object.request.InsertNewProductRequest;
 import core.wefix.lab.utils.object.response.AvgReviewsResponse;
+import core.wefix.lab.utils.object.response.GetPaymentResponse;
 import core.wefix.lab.utils.object.response.GetProductResponse;
 import core.wefix.lab.utils.object.staticvalues.CurrencyPayPal;
 import io.swagger.v3.oas.annotations.Operation;
@@ -119,4 +120,27 @@ public class WorkerApiController {
     String successFinePayment(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) {
         return workerService.paymentSuccess(paymentId, payerId);
     }
+
+    @GetMapping(path = "/all-payments", produces = "application/json")
+    @Operation(summary = "Allows worker to get all his payment")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    List<GetPaymentResponse> getPayments() {
+        return workerService.getPayments();
+    }
+
+    @GetMapping(path = "/get-payment", produces = "application/json")
+    @Operation(summary = "Allows worker to get all info about a certain payment")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    GetPaymentResponse getPaymentInfo(@Param("paymentId") Long paymentId) {
+        return workerService.getPaymentInfo(paymentId);
+    }
+
 }

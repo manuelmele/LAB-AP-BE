@@ -4,13 +4,16 @@ import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import core.wefix.lab.entity.Account;
+import core.wefix.lab.entity.PaymentInfo;
 import core.wefix.lab.entity.Product;
 import core.wefix.lab.repository.AccountRepository;
+import core.wefix.lab.repository.PaymentInfoRepository;
 import core.wefix.lab.repository.ProductRepository;
 import core.wefix.lab.repository.ReviewRepository;
 import core.wefix.lab.service.jwt.JWTService;
 import core.wefix.lab.utils.object.request.InsertNewProductRequest;
 import core.wefix.lab.utils.object.response.AvgReviewsResponse;
+import core.wefix.lab.utils.object.response.GetPaymentResponse;
 import core.wefix.lab.utils.object.response.GetProductResponse;
 import core.wefix.lab.utils.object.staticvalues.CurrencyPayPal;
 import core.wefix.lab.utils.object.staticvalues.Role;
@@ -44,6 +47,8 @@ public class WorkerService {
     private final AccountRepository accountRepository;
     private final ProductRepository productRepository;
     private final ReviewRepository reviewRepository;
+    private final PaymentInfoRepository paymentInfoRepository;
+
 
 
     /**
@@ -203,6 +208,35 @@ public class WorkerService {
             System.out.println(e.getMessage());
         }
         return "redirect:/";
+    }
+
+    public List<GetPaymentResponse> getPayments() {
+        Account account = getWorkerInfo();
+        List<PaymentInfo> paymentsRetrieved = paymentInfoRepository.findByPayerIdAndIsValidTrue(account.getAccountId());
+        List<GetPaymentResponse> getReviewResponse = new ArrayList<>();
+        for (PaymentInfo paymentInfo : paymentsRetrieved) {
+            getReviewResponse.add(new GetPaymentResponse(
+                    paymentInfo.getPaymentId(),
+                    paymentInfo.getPaymentDate(),
+                    paymentInfo.getPrice(),
+                    paymentInfo.getCurrency(),
+                    paymentInfo.getPaypalPayerId()));
+        }
+        return getReviewResponse;
+    }
+
+    public GetPaymentResponse getPaymentInfo(Long paymentId) {
+        getWorkerInfo();
+        PaymentInfo paymentInfo = paymentInfoRepository.findByPaymentIdAndIsValidTrue(paymentId);
+        if (paymentInfo == null)
+            return new GetPaymentResponse();
+        else
+            return new GetPaymentResponse(
+                    paymentInfo.getPaymentId(),
+                    paymentInfo.getPaymentDate(),
+                    paymentInfo.getPrice(),
+                    paymentInfo.getCurrency(),
+                    paymentInfo.getPaypalPayerId());
     }
 
 }

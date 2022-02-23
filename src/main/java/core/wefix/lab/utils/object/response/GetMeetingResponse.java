@@ -1,5 +1,6 @@
 package core.wefix.lab.utils.object.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import core.wefix.lab.utils.object.staticvalues.Category;
 import core.wefix.lab.utils.object.staticvalues.Role;
@@ -22,6 +23,7 @@ public class GetMeetingResponse {
     private byte[] photoProfile;
     private String category;
     private String description;
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime date;
     private String slot_time;
     private Boolean accepted;
