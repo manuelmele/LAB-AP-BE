@@ -116,6 +116,39 @@ public class AccountApiController {
         return accountService.getWorkerMeetings(emailWorker);
     }
 
+    @GetMapping(path = "/customer-meetings", produces = "application/json")
+    @Operation(summary = "Allows the customer to get all meetings")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    List<GetMeetingResponse> getCustomerMeetings(@Param("emailCustomer") String emailCustomer) {
+        return accountService.getCustomerMeetings(emailCustomer);
+    }
+
+    @PutMapping(path = "/approve-meeting", produces = "application/json")
+    @Operation(summary = "Allows the worker to accept/decline a meeting")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    void approveMeeting(@Param("idMeeting") Long idMeeting, @Param("accept") Boolean accept) {
+        accountService.approveMeeting(idMeeting, accept);
+    }
+
+    @PutMapping(path = "/share-position", produces = "application/json")
+    @Operation(summary = "Allows the worker to start/stop sharing their position")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    void sharePosition(@Param("idMeeting") Long idMeeting, @Param("start") Boolean start, @Param("latitude") Double latitude, @Param("longitude") Double longitude) {
+        accountService.sharePosition(idMeeting, start, latitude, longitude);
+    }
+
     @PostMapping(path = "/add-meeting", produces = "application/json")
     @Operation(summary = "Allows to create a new meeting")
     @ApiResponses({
