@@ -8,6 +8,7 @@ import core.wefix.lab.repository.ProductRepository;
 import core.wefix.lab.repository.ReviewRepository;
 import core.wefix.lab.service.jwt.JWTService;
 import core.wefix.lab.utils.object.request.InsertNewProductRequest;
+import core.wefix.lab.utils.object.response.AvgReviewsResponse;
 import core.wefix.lab.utils.object.response.GetProductResponse;
 import core.wefix.lab.utils.object.response.GetReviewsResponse;
 import core.wefix.lab.utils.object.staticvalues.Role;
@@ -153,6 +154,19 @@ public class WorkerService {
         productRepository.save(productRetrieved);
     }
 
+    public AvgReviewsResponse getCustomerAvgReviews(String emailCustomer) {
+        getWorkerInfo();
+        // emailCustomer validate
+        if (!emailCustomer.matches(emailRegex))
+            throw new IllegalArgumentException("Invalid emailCustomer");
+        Account account = accountRepository.findByEmailAndUserRole(emailCustomer, Role.Customer);
+        Double avgStar;
+        if (account != null)
+            avgStar = reviewRepository.avgStar(account.getAccountId());
+        else
+            throw new IllegalArgumentException("Invalid emailCustomer");
 
+        return new AvgReviewsResponse(avgStar);
+    }
 
 }

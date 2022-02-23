@@ -3,7 +3,6 @@ package core.wefix.lab.service;
 import core.wefix.lab.entity.Account;
 import core.wefix.lab.entity.Meeting;
 import core.wefix.lab.entity.Product;
-import core.wefix.lab.entity.Product;
 import core.wefix.lab.entity.Review;
 import core.wefix.lab.repository.AccountRepository;
 import core.wefix.lab.repository.MeetingRepository;
@@ -13,13 +12,8 @@ import core.wefix.lab.service.jwt.JWTAuthenticationService;
 import core.wefix.lab.service.jwt.JWTService;
 import core.wefix.lab.utils.object.Regex;
 import core.wefix.lab.utils.object.request.InsertNewMeetingRequest;
-import core.wefix.lab.utils.object.request.InsertNewProductRequest;
 import core.wefix.lab.utils.object.request.UpdateProfileRequest;
-import core.wefix.lab.utils.object.response.GetProductResponse;
-import core.wefix.lab.utils.object.response.GetMeetingResponse;
-import core.wefix.lab.utils.object.response.GetProfileResponse;
-import core.wefix.lab.utils.object.response.GetReviewsResponse;
-import core.wefix.lab.utils.object.response.JWTResponse;
+import core.wefix.lab.utils.object.response.*;
 import core.wefix.lab.utils.object.staticvalues.Category;
 import core.wefix.lab.utils.object.staticvalues.Role;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +34,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static core.wefix.lab.utils.object.Regex.*;
 import static core.wefix.lab.utils.object.staticvalues.StaticObject.photoProfileBase;
@@ -133,9 +126,9 @@ public class AccountService {
 
 	public List<GetReviewsResponse> getCustomerReviews(String emailCustomer) {
 		getCustomerOrWorkerInfo();
-		// emailWorker validate
+		// emailCustomer validate
 		if (!emailCustomer.matches(emailRegex))
-			throw new IllegalArgumentException("Invalid emailWorker");
+			throw new IllegalArgumentException("Invalid emailCustomer");
 		Account account = accountRepository.findByEmailAndUserRole(emailCustomer, Role.Customer);
 		List<Review> reviewsRetrieved;
 		List<GetReviewsResponse> getReviewsResponse = new ArrayList<>();
@@ -151,6 +144,21 @@ public class AccountService {
 		}
 		return getReviewsResponse;
 	}
+
+	public AvgReviewsResponse getWorkerAvgReviews(String emailWorker) {
+		getCustomerOrWorkerInfo();
+		// emailWorker validate
+		if (!emailWorker.matches(emailRegex))
+			throw new IllegalArgumentException("Invalid emailWorker");
+		Account account = accountRepository.findByEmailAndUserRole(emailWorker, Role.Worker);
+		Double avgStar;
+		if (account != null)
+			avgStar = reviewRepository.avgStar(account.getAccountId());
+		else
+			throw new IllegalArgumentException("Invalid emailWorker");
+		return new AvgReviewsResponse(avgStar);
+	}
+
 
 	public List<GetMeetingResponse> getWorkerMeetings(String emailWorker) {
 		getCustomerOrWorkerInfo();
@@ -270,6 +278,18 @@ public class AccountService {
 		}
 	}
 
+	public void updatePhotoProfile(MultipartFile photoProfile) {
+		Account account = getCustomerOrWorkerInfo();
+		if (photoProfile != null) {
+			try {
+				account.setPhotoProfile(photoProfile.getBytes());
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Invalid photoProfile");
+			}
+		}
+		accountRepository.save(account);
+	}
+
 	/**
 	 * Allows user to change his data
 	 * @param updateProfileRequest: json data retrieved from body to complete request
@@ -283,12 +303,11 @@ public class AccountService {
 			account.setFirstName(updateProfileRequest.getFirstName());
 		if (updateProfileRequest.getSecondName() != null)
 			account.setSecondName(updateProfileRequest.getSecondName());
-		if (updateProfileRequest.getPhotoProfile() != null)
-			account.setPhotoProfile(updateProfileRequest.getPhotoProfile());
 		if (updateProfileRequest.getBio() != null)
 			account.setBio(updateProfileRequest.getBio());
 		accountRepository.save(account);
 	}
+
 
 
 	public List<GetProfileResponse> getWorkersOfCategory(String categoryString) {
@@ -347,7 +366,7 @@ public class AccountService {
 	}
 
 	public List<GetReviewsResponse> getReviews() {
-		Account workerAccount = accountRepository.findByEmailAndUserRole(getCustomerOrWorkerInfo().getEmail(), Role.Worker);
+		Account workerAccount = accountRepository.findByEmailAndUserRole(getCustomerOrWorkerInfo().getEmail(),getCustomerOrWorkerInfo().getUserRole());
 		List<Review> reviewsRetrieved;
 		List<GetReviewsResponse> getReviewsResponse = new ArrayList<>();
 		if (workerAccount != null) {

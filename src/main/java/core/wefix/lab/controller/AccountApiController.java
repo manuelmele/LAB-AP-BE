@@ -81,6 +81,17 @@ public class AccountApiController {
         return accountService.getCustomerReviews(emailCustomer);
     }
 
+    @GetMapping(path = "/worker-avg-reviews", produces = "application/json")
+    @Operation(summary = "Allows consumer to get avg of worker reviews")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    AvgReviewsResponse getWorkerAvgReviews(@Param("emailWorker") String emailWorker) {
+        return accountService.getWorkerAvgReviews(emailWorker);
+    }
+
     @GetMapping(path = "/worker-products", produces = "application/json")
     @Operation(summary = "Allows consumer to get all worker products")
     @ApiResponses({
@@ -145,6 +156,17 @@ public class AccountApiController {
     })
     void updateProfile(@RequestBody UpdateProfileRequest updateProfileRequest) {
         accountService.updateProfile(updateProfileRequest);
+    }
+
+    @PutMapping(path = "/update-photo-profile", produces = "application/json", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @Operation(summary = "Allows user to update his profile data")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    void updatePhotoProfile(@Param("photoProfile") MultipartFile photoProfile) {
+        accountService.updatePhotoProfile(photoProfile);
     }
 
     @GetMapping(path = "/categories", produces = "application/json")

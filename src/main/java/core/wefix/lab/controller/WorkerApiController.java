@@ -3,6 +3,7 @@ package core.wefix.lab.controller;
 import core.wefix.lab.configuration.error.ErrorResponse;
 import core.wefix.lab.service.WorkerService;
 import core.wefix.lab.utils.object.request.InsertNewProductRequest;
+import core.wefix.lab.utils.object.response.AvgReviewsResponse;
 import core.wefix.lab.utils.object.response.GetProductResponse;
 import core.wefix.lab.utils.object.response.GetReviewsResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -76,6 +78,15 @@ public class WorkerApiController {
         workerService.deleteProduct(productId);
     }
 
-
+    @GetMapping(path = "/user-avg-reviews", produces = "application/json")
+    @Operation(summary = "Allows worker to get avg of customer reviews")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    AvgReviewsResponse getCustomerAvgReviews(@Param("emailCustomer") String emailCustomer) {
+        return workerService.getCustomerAvgReviews(emailCustomer);
+    }
 
 }

@@ -15,7 +15,6 @@ public class UpdateProfileRequest {
 	private String firstName;
 	private String secondName;
 	private String bio;
-	private byte[] photoProfile;
 
 	public static boolean validateUpdateProfileRequestJsonFields(UpdateProfileRequest updateProfileRequest) {
 

@@ -60,5 +60,5 @@ public class Product implements Serializable {
 	@OnDelete(action = CASCADE)
 	@ManyToOne(cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
-	private Product userIdProduct;
+	private Account userIdProduct;
 }

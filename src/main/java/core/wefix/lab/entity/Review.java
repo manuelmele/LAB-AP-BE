@@ -42,10 +42,10 @@ public class Review implements Serializable {
 	@OnDelete(action = CASCADE)
 	@ManyToOne(cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "userId_receive", referencedColumnName = "id", insertable = false, updatable = false)
-	private Review userIdReceiveAccountReview;
+	private Account userIdReceiveAccountReview;
 
 	@OnDelete(action = CASCADE)
 	@ManyToOne(cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "userId_assign", referencedColumnName = "id", insertable = false, updatable = false)
-	private Review userIdAssignAccountReview;
+	private Account userIdAssignAccountReview;
 }
