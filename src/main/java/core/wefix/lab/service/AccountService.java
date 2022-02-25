@@ -233,6 +233,19 @@ public class AccountService {
 		return getMeetingsResponse;
 	}
 
+	public List<GetPositionResponse> getPosition(Long idMeeting) {
+		getCustomerOrWorkerInfo();
+
+		List<GetPositionResponse> positionResponse = new ArrayList<>();
+		Meeting meetingRetrieved = meetingRepository.findByIdMeeting(idMeeting);
+
+		positionResponse.add(new GetPositionResponse(
+							meetingRetrieved.getLatPosition(),
+							meetingRetrieved.getLngPosition()));
+
+		return positionResponse;
+	}
+
 	/**
 	 * Allows user to insert a new meeting
 	 * @param newMeeting: json data retrieved from body to complete request
@@ -289,7 +302,7 @@ public class AccountService {
 
 		Meeting meeting = meetingRepository.findByIdMeeting(idMeeting);
 
-		System.out.println(latitude);
+		//System.out.println(started);
 
 		if(started != null)
 			meeting.setStartedMeeting(started);
