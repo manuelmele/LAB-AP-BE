@@ -241,4 +241,15 @@ public class WorkerService {
                     paymentInfo.getPaypalPayerId());
     }
 
+    public Account getUserInfo(String emailCustomer){
+        getWorkerInfo();
+        // emailCustomer validate
+        if (!emailCustomer.matches(emailRegex))
+            throw new IllegalArgumentException("Invalid emailCustomer");
+        Account account = accountRepository.findByEmailAndUserRole(emailCustomer, Role.Customer);
+        if (account != null)
+            return account;
+        else
+            throw new IllegalArgumentException("Invalid emailCustomer");
+    }
 }

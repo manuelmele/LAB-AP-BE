@@ -1,6 +1,7 @@
 package core.wefix.lab.controller;
 
 import core.wefix.lab.configuration.error.ErrorResponse;
+import core.wefix.lab.entity.Account;
 import core.wefix.lab.service.WorkerService;
 import core.wefix.lab.utils.object.request.InsertNewProductRequest;
 import core.wefix.lab.utils.object.response.AvgReviewsResponse;
@@ -141,6 +142,17 @@ public class WorkerApiController {
     })
     GetPaymentResponse getPaymentInfo(@Param("paymentId") Long paymentId) {
         return workerService.getPaymentInfo(paymentId);
+    }
+
+    @GetMapping(path = "/get-user-info", produces = "application/json")
+    @Operation(summary = "Allows worker to get all info about a certain user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    Account getUserInfo(@Param("emailCustomer") String emailCustomer) {
+        return workerService.getUserInfo(emailCustomer);
     }
 
 }
