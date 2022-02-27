@@ -11,6 +11,7 @@ import core.wefix.lab.repository.*;
 import core.wefix.lab.service.jwt.JWTAuthenticationService;
 import core.wefix.lab.service.jwt.JWTService;
 import core.wefix.lab.utils.object.Regex;
+import core.wefix.lab.utils.object.request.AddReviewRequest;
 import core.wefix.lab.utils.object.request.InsertNewMeetingRequest;
 import core.wefix.lab.utils.object.request.UpdateProRequest;
 import core.wefix.lab.utils.object.request.UpdateProfileRequest;
@@ -518,5 +519,31 @@ public class AccountService {
 		Account account = getCustomerOrWorkerInfo();
 		this.updateProRequest = updateProRequest;
 		return pay(updateProRequest.getPrice(), updateProRequest.getCurrency());
+	}
+
+	public GetReviewsResponse addReview(AddReviewRequest addReviewRequest) {
+		Account accountAssignReview = getCustomerOrWorkerInfo();
+		// json fields validate
+		if(!AddReviewRequest.validateRegisterRequestJsonFields(addReviewRequest))
+		 throw new IllegalArgumentException("Invalid json body");
+
+		Account accountReceiveReview;
+		if (accountAssignReview.getUserRole().equals(Role.Worker))
+			accountReceiveReview = accountRepository.findByEmailAndUserRole(addReviewRequest.getEmail_receive(), Role.Customer);
+		else if (accountAssignReview.getUserRole().equals(Role.Customer))
+			accountReceiveReview = accountRepository.findByEmailAndUserRole(addReviewRequest.getEmail_receive(), Role.Worker);
+		else throw new IllegalArgumentException("Worker can't write review for another worker or Customer can't write review for another customer");
+		if(accountReceiveReview != null) {
+			reviewRepository.save(new Review(accountReceiveReview.getAccountId(),
+					accountAssignReview.getAccountId(),
+					addReviewRequest.getContent(),
+					addReviewRequest.getStar()));
+			return new GetReviewsResponse(
+					addReviewRequest.getContent(),
+					addReviewRequest.getStar(),
+					accountAssignReview.getFirstName(),
+					accountAssignReview.getSecondName());
+		}
+		else throw new IllegalArgumentException("Some error occurs");
 	}
 }

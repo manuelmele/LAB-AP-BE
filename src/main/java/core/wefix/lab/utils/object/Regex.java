@@ -2,6 +2,7 @@ package core.wefix.lab.utils.object;
 
 public class Regex {
 	public static final String onlyNumberRegex = "^[0-9]+$";
+	public static final String starRegex = "^[0-5]+$";
 	public static final String licensePlateRegex = "^[A-Z]{2}+[0-9]{3}+[A-Z]{2}";
 	public static final String latitudeRegex = "^(\\+|-)?(?:90(?:(?:\\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\\.[0-9]{1,6})?))$";
 	public static final String longitudeRegex = "^(\\+|-)?(?:180(?:(?:\\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\\.[0-9]{1,6})?))$";
@@ -19,6 +20,7 @@ public class Regex {
 	public static final String emailRegex = "^[_a-z0-9-]+(\\.[_a-z0-9-]+)*@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,})$";
 	public static final String passwordRegex = "^(?=.*?[0-9])(?=.*?[a-z])(?=.*?[A-Z])(.{8,30})$";
 	public static final String bioRegex = "^^[A-Za-z\\d@!\\\"#$%&\\'()*+,-.\\/:;<=>?@^_`\\{|\\}~\\sÀ-ÿ\\[\\]]{0,128}$";
+	public static final String contentReviewRegex = "^^[A-Za-z\\d@!\\\"#$%&\\'()*+,-.\\/:;<=>?@^_`\\{|\\}~\\sÀ-ÿ\\[\\]]{0,64}$";
 	public static final String categoryRegex = "^(Plumber|Painter|Electrician|Glazier|Gardener|Carpenter|ChimneySweep|Blacksmith)$";
 	public static final String currencyRegex = "^(EUR|USD|AUD|BRL|CAD|CNY|CZK|DKK|HKD|HUF|ILS|JPY|MYR|MXN|TWD|NZD|NOK|PHP|PLN|GBP|RUB|SGD|SEK|CHF|THB)$";
 	public static final String roleRegex = "^(User|Admin)$";

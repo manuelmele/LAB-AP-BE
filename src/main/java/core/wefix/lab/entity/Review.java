@@ -39,6 +39,13 @@ public class Review implements Serializable {
 	@Column(name = "star")
 	private Long star;
 
+	public Review (Long userIdReceiveReview, Long userIdAssignReview, String content, Long star) {
+		this.userIdReceiveReview = userIdReceiveReview;
+		this.userIdAssignReview = userIdAssignReview;
+		this.content = content;
+		this.star = star;
+	}
+
 	@OnDelete(action = CASCADE)
 	@ManyToOne(cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "userId_receive", referencedColumnName = "id", insertable = false, updatable = false)
