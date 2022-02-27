@@ -2,10 +2,7 @@ package core.wefix.lab.controller;
 
 import core.wefix.lab.configuration.error.ErrorResponse;
 import core.wefix.lab.service.AccountService;
-import core.wefix.lab.utils.object.request.InsertNewMeetingRequest;
-import core.wefix.lab.utils.object.request.InsertNewProductRequest;
-import core.wefix.lab.utils.object.request.UpdateProRequest;
-import core.wefix.lab.utils.object.request.UpdateProfileRequest;
+import core.wefix.lab.utils.object.request.*;
 import core.wefix.lab.utils.object.response.*;
 import core.wefix.lab.utils.object.staticvalues.Category;
 import core.wefix.lab.utils.object.staticvalues.CurrencyPayPal;
@@ -290,5 +287,15 @@ public class AccountApiController {
         return accountService.updatePro(updateProRequest);
     }
 
+    @PostMapping(path = "/add-review", produces = "application/json")
+    @Operation(summary = "Allows user to add review for worker, it allows worker to add review for user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    GetReviewsResponse addReview(@RequestBody AddReviewRequest addReviewRequest) {
+        return accountService.addReview(addReviewRequest);
+    }
 
 }
