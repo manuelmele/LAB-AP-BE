@@ -30,8 +30,6 @@ public class Regex {
 	public static final String descriptionRegex = "^^[A-Za-z\\d@!\\\"#$%&\\'()*+,-.\\/:;<=>?@^_`\\{|\\}~\\sÀ-ÿ\\[\\]]{0,256}$";
 	public static final String titleRegex = "^^[A-Za-z\\d@!\\\"#$%&\\'()*+,-.\\/:;<=>?@^_`\\{|\\}~\\sÀ-ÿ\\[\\]]{0,64}$";
 	public static final String identityCardRegex = "^[A-Z]{2}+[0-9]{5}+[A-Z-0-9]{2}";
-
-
 	public static final String dateRegex = "^([0-2][0-9]||3[0-1])/(0[0-9]||1[0-2])/([0-9][0-9])?[0-9][0-9]$";
 
 
