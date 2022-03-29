@@ -103,15 +103,15 @@ public class AccountService {
 				avgStar);
 	}
 
-	public GetProfileResponse getWorkerProfile(String emailWorker) {
+	public Account getWorkerProfile(String emailWorker) {
 		// emailWorker validate
 		if (!emailWorker.matches(emailRegex))
 			throw new IllegalArgumentException("Invalid emailWorker");
 		Account workerAccount = accountRepository.findByEmailAndUserRole(emailWorker, Role.Worker);
 		if (workerAccount != null)
-			return getProfile(workerAccount.getAccountId());
+			return workerAccount;
 		else
-			return new GetProfileResponse();
+			return new Account();
 	}
 
 	public List<GetReviewsResponse> getWorkerReviews(String emailWorker) {

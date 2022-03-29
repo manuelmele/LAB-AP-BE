@@ -1,6 +1,7 @@
 package core.wefix.lab.controller;
 
 import core.wefix.lab.configuration.error.ErrorResponse;
+import core.wefix.lab.entity.Account;
 import core.wefix.lab.service.AccountService;
 import core.wefix.lab.utils.object.request.*;
 import core.wefix.lab.utils.object.response.*;
@@ -54,7 +55,7 @@ public class AccountApiController {
             @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    GetProfileResponse getWorkerProfile(@Param("emailWorker") String emailWorker) {
+    Account getWorkerProfile(@Param("emailWorker") String emailWorker) {
         return accountService.getWorkerProfile(emailWorker);
     }
 
