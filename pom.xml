@@ -132,6 +132,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
+        <finalName>we-fix</finalName>
     </build>
 
 </project>

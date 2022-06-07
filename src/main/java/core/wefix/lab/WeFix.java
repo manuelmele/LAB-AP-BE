@@ -9,6 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.TimeZone;
@@ -37,6 +38,11 @@ import java.util.TimeZone;
 })
 @SpringBootApplication(exclude = ErrorMvcAutoConfiguration.class)
 public class WeFix {
+
+	@GetMapping("/message")
+	public String getMessage(){
+		return "Welcome to We Fix!";
+	}
 
 	public static void main(String[] args) {
 		TimeZone.setDefault(TimeZone.getTimeZone("Europe/Rome"));
