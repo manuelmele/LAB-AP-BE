@@ -25,7 +25,6 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PublicApiControllerTest {
-
     @Autowired
     private TestRestTemplate restTemplate;
 
