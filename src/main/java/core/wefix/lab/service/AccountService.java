@@ -124,13 +124,16 @@ public class AccountService {
 		List<GetReviewsResponse> getReviewsResponse = new ArrayList<>();
 		if (workerAccount != null) {
 			reviewsRetrieved = reviewRepository.findByUserIdReceiveReview(workerAccount.getAccountId());
-			for (Review review : reviewsRetrieved)
+			Account reviewerAccount;
+			for (Review review : reviewsRetrieved) {
+				reviewerAccount = accountRepository.findByAccountId(review.getUserIdAssignReview());
 				getReviewsResponse.add(new GetReviewsResponse(
 						review.getContent(),
 						review.getStar(),
-						workerAccount.getFirstName(),
-						workerAccount.getSecondName()
+						reviewerAccount.getFirstName(),
+						reviewerAccount.getSecondName()
 				));
+			}
 		}
 		return getReviewsResponse;
 	}
@@ -145,13 +148,16 @@ public class AccountService {
 		List<GetReviewsResponse> getReviewsResponse = new ArrayList<>();
 		if (account != null) {
 			reviewsRetrieved = reviewRepository.findByUserIdReceiveReview(account.getAccountId());
-			for (Review review : reviewsRetrieved)
+			Account reviewerAccount;
+			for (Review review : reviewsRetrieved) {
+				reviewerAccount = accountRepository.findByAccountId(review.getUserIdAssignReview());
 				getReviewsResponse.add(new GetReviewsResponse(
 						review.getContent(),
 						review.getStar(),
-						account.getFirstName(),
-						account.getSecondName()
+						reviewerAccount.getFirstName(),
+						reviewerAccount.getSecondName()
 				));
+			}
 		}
 		return getReviewsResponse;
 	}
