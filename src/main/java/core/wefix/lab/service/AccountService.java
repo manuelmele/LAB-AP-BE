@@ -103,15 +103,22 @@ public class AccountService {
 				avgStar);
 	}
 
-	public Account getWorkerProfile(String emailWorker) {
+	public GetProfileResponse getWorkerProfile(String emailWorker) {
 		// emailWorker validate
 		if (!emailWorker.matches(emailRegex))
 			throw new IllegalArgumentException("Invalid emailWorker");
 		Account workerAccount = accountRepository.findByEmailAndUserRole(emailWorker, Role.Worker);
-		if (workerAccount != null)
-			return workerAccount;
-		else
-			return new Account();
+		Double avgStar = reviewRepository.avgStar(workerAccount.getAccountId());
+		return new GetProfileResponse(workerAccount.getFirstName(),
+				workerAccount.getSecondName(),
+				workerAccount.getEmail(),
+				workerAccount.getBio(),
+				workerAccount.getPhotoProfile(),
+				workerAccount.getPIva(),
+				workerAccount.getIdentityCardNumber(),
+				workerAccount.getUserRole(),
+				workerAccount.getUserCategory(),
+				avgStar);
 	}
 
 	public List<GetReviewsResponse> getWorkerReviews(String emailWorker) {
@@ -291,8 +298,6 @@ public class AccountService {
 
 		Meeting meeting = meetingRepository.findByIdMeeting(idMeeting);
 		meeting.setAcceptedMeeting(accepted);
-
-
 		meetingRepository.save(meeting);
 	}
 
