@@ -147,6 +147,17 @@ public class AccountApiController {
         accountService.sharePosition(idMeeting, start, latitude, longitude);
     }
 
+    @GetMapping(path = "/get-position", produces = "application/json")
+    @Operation(summary = "Allows the user to get the worker meeting position")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful Operation"),
+            @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    List<GetPositionResponse> getPosition(@Param("idMeeting") Long idMeeting) {
+        return accountService.getPosition(idMeeting);
+    }
+
     @PostMapping(path = "/add-meeting", produces = "application/json")
     @Operation(summary = "Allows to create a new meeting")
     @ApiResponses({
