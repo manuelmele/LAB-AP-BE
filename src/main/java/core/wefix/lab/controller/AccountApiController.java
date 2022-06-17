@@ -55,7 +55,7 @@ public class AccountApiController {
             @ApiResponse(responseCode = "400", description = "Operation failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "403", description = "Authentication Failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    Account getWorkerProfile(@Param("emailWorker") String emailWorker) {
+    GetProfileResponse getWorkerProfile(@Param("emailWorker") String emailWorker) {
         return accountService.getWorkerProfile(emailWorker);
     }
 
